@@ -549,6 +549,11 @@ Point3<T> Abs(const Point3_arg<T> p)
 //    return 
 //}
 
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+T Distance(const Point3_arg<T> p1, const Point3_arg<T> p2) {
+    return (p1 - p2).Length();
+}
+
 #pragma endregion Point
 
 
@@ -987,7 +992,11 @@ struct Bounds3
 
     // NOTE: questionable method
     // Lineary interpolates between the corners of the box by the given amount in each dimension
-    //PBR_CNSTEXPR PBR_INLINE Point3<T> Lerp(const Point3_arg<T> t) const;
+    PBR_CNSTEXPR PBR_INLINE Point3<T> Lerp(const Point3_arg<T> t) const;
+
+    PBR_CNSTEXPR PBR_INLINE Vector3<T> Offset(const Point3_arg<T> p) const;
+
+    PBR_CNSTEXPR PBR_INLINE void BoundingSphere(Point3<T> &center, fp_t &radius) const;
 
 
     Point3<T> pMin, pMax;
@@ -1069,13 +1078,31 @@ i32 Bounds3<T>::MaximumExtent() const
     return 2;
 }
 
-// template<typename T> PBR_CNSTEXPR PBR_INLINE
-// Point3<T> Bounds3<T>::Lerp(const Point3_arg<T> t) const
-// {
-//     return Point3<T>(pbr::Lerp(t.x, pMin.x, pMax.x),
-//                      pbr::Lerp(t.y, pMin.y, pMax.y),
-//                      pbr::Lerp(t.z, pMin.z, pMax.z));
-// }
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+Point3<T> Bounds3<T>::Lerp(const Point3_arg<T> t) const
+{
+    return Point3<T>(pbr::Lerp(t.x, pMin.x, pMax.x),
+                     pbr::Lerp(t.y, pMin.y, pMax.y),
+                     pbr::Lerp(t.z, pMin.z, pMax.z));
+}
+
+// TODO: in theory useless 'if' checks, but as i understand it's because of
+// Bounds3(const Point3_arg<T> p) constructor
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+Vector3<T> Bounds3<T>::Offset(const Point3_arg<T> p) const {
+    Vector3<T> o = p - pMin;
+    if (pMax.x > pMin.x) o.x /= pMax.x - pMin.x;
+    if (pMax.y > pMin.y) o.y /= pMax.y - pMin.y;
+    if (pMax.z > pMin.z) o.z /= pMax.z - pMin.z;
+    return o;
+}
+
+// TODO: probably should return pair, instead of returning through reference
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+void Bounds3<T>::BoundingSphere(Point3<T> &center, fp_t &radius) const {
+    center = (pMin + pMax) / 2;
+    radius = Inside(center, *this) ? Distance(center, pMax) : static_cast<fp_t>(0);
+}
 
 
 template<typename T> PBR_CNSTEXPR PBR_INLINE
@@ -1105,11 +1132,11 @@ Bounds3<T> Intersect(const Bounds3_arg<T> b1, const Bounds3_arg<T> b2)
     return result;
 }
 
+// TODO: define compare operator for two Point3 ?
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 bool Overlaps(const Bounds3_arg<T> b1, const Bounds3_arg<T> b2)
 {
     // NOTE: not sure how it works monkaHmm
-    // TODO: define compare operator for two Point3 ?
     bool x = (b1.pMax.x >= b2.pMin.x) && (b1.pMin.x <= b2.pMax.x);
     bool y = (b1.pMax.y >= b2.pMin.y) && (b1.pMin.y <= b2.pMax.y);
     bool z = (b1.pMax.z >= b2.pMin.z) && (b1.pMin.z <= b2.pMax.z);
@@ -1125,8 +1152,9 @@ bool Inside(const Point3_arg<T> p, const Bounds3_arg<T> b)
             p.z >= b.pMin.z && p.z <= b.pMax.z);
 }
 
+// TODO: define compare operator for two Point3 ?
 // Determine if a given point is inside the bounding box, doesn't consider points on
-// the upper doundary to be inside the bounds.
+// the upper boundary to be inside the bounds.
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 bool InsideExclusive(const Point3_arg<T> p, const Bounds3_arg<T> b)
 {

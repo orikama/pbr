@@ -1,7 +1,7 @@
-# Visual Studio files
+# Visual Studio
 .vs/
-.vscode/
-
-# Cmake build
 out/
 
+# VS Code
+.vscode/
+build/

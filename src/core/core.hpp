@@ -1,5 +1,7 @@
 #pragma once
 
+#include "pbr_concepts.hpp"
+
 #include <cstdint>
 
 using i32 = std::int32_t;
