@@ -1,22 +1,17 @@
-cmake_minimum_required(VERSION 3.17)
-
-project(PBR_UTests CXX)
+#cmake_minimum_required(VERSION 3.17)
+#project(pbr_utests CXX)
 
 
 #set(TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests")
-set(PBR_UTESTS_SOURCES test_geometry.cpp)
+set(pbr_utests_SOURCES test_geometry.cpp)
 
 #enable_testing()
 
-#function(pbr_prepare_test test_target spdlog_lib)
-    add_executable(PBR_UTests main.cpp ${PBR_UTESTS_SOURCES})
-    #spdlog_enable_warnings(${test_target})
-    #target_link_libraries(PBR_UTests PRIVATE ${spdlog_lib})
 
-    add_test(NAME PBR_UTests COMMAND PBR_UTests)
-    #set_tests_properties(PBR_UTests PROPERTIES RUN_SERIAL ON)
-#endfunction()
+add_executable(pbr_utests main.cpp doctest.h ${pbr_utests_SOURCES})
+target_link_libraries(pbr_utests PRIVATE pbr_lib)
+#target_include_directories(pbr_utests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+#spdlog_enable_warnings(${test_target})
 
-#if(PBR_EXECUTE_TESTS)
-#    pbr_prepare_test(spdlog-utests spdlog::spdlog)
-#endif()
+add_test(NAME pbr_utests COMMAND pbr_utests)
+#set_tests_properties(PBR_UTests PROPERTIES RUN_SERIAL ON)

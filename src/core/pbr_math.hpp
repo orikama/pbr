@@ -5,7 +5,7 @@
 #include <limits>
 #include <numbers>
 
-#include <core/core.hpp>
+#include "core.hpp"
 
 
 namespace pbr {
@@ -23,7 +23,7 @@ bool isNaN(const T x)
 }
 
 
-template<std::floating_point T> inline
+template<typename T> inline
 T sqrt(const T v)
 {
     static_assert(std::numeric_limits<T>::is_iec559);
@@ -100,7 +100,7 @@ T sqrt(const T v)
 //}
 
 
-template<std::floating_point T> inline
+template<typename T> inline
 T floor(const T v)
 {
     static_assert(std::numeric_limits<T>::is_iec559);
@@ -111,7 +111,7 @@ T floor(const T v)
         return std::floor(v);
 }
 
-template<std::floating_point T> inline
+template<typename T> inline
 T ceil(const T v)
 {
     static_assert(std::numeric_limits<T>::is_iec559);

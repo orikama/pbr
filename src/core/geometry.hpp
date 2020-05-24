@@ -1,7 +1,9 @@
 #pragma once
 
-#include <core/core.hpp>
-#include <core/pbr_math.hpp>
+#include <compare>
+
+#include "core.hpp"
+#include "pbr_math.hpp"
 
 
 #define PBR_CNSTEXPR constexpr
@@ -35,6 +37,7 @@ struct Vector3
     PBR_CNSTEXPR PBR_INLINE Vector3<T>& operator*=(const T scalar);
     PBR_CNSTEXPR PBR_INLINE Vector3<T>& operator/=(const T scalar);
 
+    friend auto operator<=>(const Vector3<T>, const Vector3<T>) = default;
 
     /*T operator[](i32 i) const
     {
@@ -51,15 +54,13 @@ struct Vector3
         return z;
     }*/
 
-
-    T x, y, z;
-
-
-private:
     bool HasNaNs() const
     {
         return isNaN(x) || isNaN(y) || isNaN(z);
     }
+
+
+    T x, y, z;
 };
 
 using Vector3f = Vector3<f32>;
@@ -76,14 +77,14 @@ Vector3<T>::Vector3()
     : x(0), y(0), z(0)
 {}
 
-template<typename T> PBR_CNSTEXPR explicit
+template<typename T> PBR_CNSTEXPR
 Vector3<T>::Vector3(T value)
     : x(value), y(value), z(value)
 {
     PBR_ASSERT(!HasNaNs());
 }
 
-template<typename T> PBR_CNSTEXPR explicit
+template<typename T> PBR_CNSTEXPR
 Vector3<T>::Vector3(T x, T y, T z)
     : x(x), y(y), z(z)
 {
@@ -349,14 +350,13 @@ struct Point3
     PBR_CNSTEXPR PBR_INLINE Point3<T>& operator-=(const Vector3_arg<T> p);
 
 
-    T x, y, z;
-
-
-private:
     bool HasNaNs() const
     {
         return isNaN(x) || isNaN(y) || isNaN(z);
     }
+
+
+    T x, y, z;
 };
 
 using Point3f = Point3<f32>;
@@ -372,14 +372,14 @@ template<typename T> PBR_CNSTEXPR
 Point3<T>::Point3() : x(0), y(0), z(0)
 {}
 
-template<typename T> PBR_CNSTEXPR explicit
+template<typename T> PBR_CNSTEXPR
 Point3<T>::Point3(T value)
     : x(value), y(value), z(value)
 {
     PBR_ASSERT(!HasNaNs());
 }
 
-template<typename T> PBR_CNSTEXPR explicit
+template<typename T> PBR_CNSTEXPR
 Point3<T>::Point3(T x, T y, T z)
     : x(x), y(y), z(z)
 {
@@ -497,6 +497,12 @@ BINARY_OPERATOR_SP(*)
 #undef BINARY_OPERATOR_PS
 #undef BINARY_OPERATOR_SP
 
+template<typename T> PBR_CNSTEXPR PBR_INLINE 
+Point3<T> operator+(const Point3_arg<T> p, const Vector3_arg<T> v)
+{
+    return Point3<T>(p.x + v.x, p.y + v.y, p.z + v.z);
+}
+
 
 // ---------------------------------------
 // ---------- UTILITY FUNCTIONS ----------
@@ -585,14 +591,13 @@ struct Normal3
     PBR_CNSTEXPR PBR_INLINE Normal3<T>& operator/=(const T scalar);
 
 
-    T x, y, z;
-
-
-private:
     bool HasNaNs() const
     {
         return isNaN(x) || isNaN(y) || isNaN(z);
     }
+
+
+    T x, y, z;
 };
 
 using Normal3f = Normal3<f32>;
@@ -609,14 +614,14 @@ Normal3<T>::Normal3()
     : x(0), y(0), z(0)
 {}
 
-template<typename T> PBR_CNSTEXPR explicit
+template<typename T> PBR_CNSTEXPR
 Normal3<T>::Normal3(T value)
     : x(value), y(value), z(value)
 {
     PBR_ASSERT(!HasNaNs());
 }
 
-template<typename T> PBR_CNSTEXPR explicit
+template<typename T> PBR_CNSTEXPR
 Normal3<T>::Normal3(T x, T y, T z)
     : x(x), y(y), z(z)
 {
@@ -844,7 +849,7 @@ struct Ray
                               fp_t time = static_cast<fp_t>(0));
 
 
-    PBR_CNSTEXPR Point3<fp_t> operator()(fp_t t) const;
+    //PBR_CNSTEXPR Point3<fp_t> operator()(fp_t t) const;
 
 
     Point3<fp_t> origin;
@@ -867,10 +872,11 @@ Ray::Ray()
     , time(static_cast<fp_t>(0))
 {}
 
-PBR_CNSTEXPR explicit
+PBR_CNSTEXPR
 Ray::Ray(const Point3_arg<fp_t> origin,
          const Vector3_arg<fp_t> direction,
-         fp_t tMax, fp_t time)
+         fp_t tMax, /* = c_Infinity */
+         fp_t time /* = static_cast<fp_t>(0)) */)
     : origin(origin)
     , direction(direction)
     , tMax(tMax)
@@ -882,11 +888,11 @@ Ray::Ray(const Point3_arg<fp_t> origin,
 // ---------- UTILITY FUNCTIONS ----------
 // ---------------------------------------
 
-PBR_CNSTEXPR
-Point3<fp_t> Ray::operator()(fp_t t) const
-{
-    return origin + direction * t;
-}
+//PBR_CNSTEXPR
+//Point3<fp_t> Ray::operator()(fp_t t) const
+//{
+//    return origin + (direction * t);
+//}
 
 #pragma endregion Ray
 
@@ -929,16 +935,16 @@ RayDifferential::RayDifferential()
     : hasDifferentials(false)
 {}
 
-PBR_CNSTEXPR explicit
+PBR_CNSTEXPR
 RayDifferential::RayDifferential(const Point3_arg<fp_t> origin,
                                  const Vector3_arg<fp_t> direction,
-                                 fp_t tMax = c_Infinity,
-                                 fp_t time = static_cast<fp_t>(0))
+                                 fp_t tMax, /* = c_Infinity*/
+                                 fp_t time /* = static_cast<fp_t>(0)*/)
     : Ray(origin, direction, tMax, time)
     , hasDifferentials(false)
 {}
 
-PBR_CNSTEXPR explicit
+PBR_CNSTEXPR
 RayDifferential::RayDifferential(const Ray_arg ray)
     : Ray(ray)
     , hasDifferentials(false)
@@ -1016,13 +1022,13 @@ Bounds3<T>::Bounds3()
     pMax = Point3<T>(std::numeric_limits<T>::lowest());
 }
 
-template<typename T> PBR_CNSTEXPR explicit
+template<typename T> PBR_CNSTEXPR
 Bounds3<T>::Bounds3(const Point3_arg<T> p)
     : pMin(p), pMax(p)
 {}
 
 // NOTE: this constructor might be inefficient, cause of somitetimes useless Min, Max
-template<typename T> PBR_CNSTEXPR explicit
+template<typename T> PBR_CNSTEXPR
 Bounds3<T>::Bounds3(const Point3_arg<T> p1, const Point3_arg<T> p2)
     : pMin(Min(p1, p2))
     , pMax(Max(p1, p2))
