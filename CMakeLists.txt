@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.17)
 project(PBR CXX)
 
 
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
+
 set(pbr_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 set(pbr_lib_SOURCES ${pbr_SRC_DIR}/core/core.hpp
@@ -24,3 +27,5 @@ if(${CMAKE_PROJECT_NAME} STREQUAL PBR)
     enable_testing()
     add_subdirectory(tests)
 endif()
+
+add_subdirectory(docs)
