@@ -10,6 +10,8 @@ Welcome to PBR's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   api/library_root
+
 
 
 Indices and tables
@@ -24,4 +26,4 @@ Indices and tables
 Docs
 ====
 
-.. doxygenindex::
+.. doxygennamespace:: pbr
