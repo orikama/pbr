@@ -10,6 +10,16 @@
 #define PBR_INLINE inline
 
 
+template <typename T> inline static
+bool isNaN(const T x)
+{
+    if constexpr (std::numeric_limits<T>::is_iec559)
+        return std::isnan(x);
+    else
+        return false;
+}
+
+
 namespace pbr {
 
 // ******************************************************************************
@@ -456,7 +466,12 @@ Point3<T> operator-(const Point3_arg<T> p)
     }
 
 BINARY_OPERATOR_PP(+)
-BINARY_OPERATOR_PP(-)
+
+template<typename T> PBR_CNSTEXPR PBR_INLINE \
+Vector3<T> operator-(const Point3_arg<T> p1, const Point3_arg<T> p2) { \
+    PBR_ASSERT(!p2.HasNaNs()); \
+    return Vector3<T>(p1.x - p2.x, p1.y - p2.y, p1.z - p2.z); \
+}
 
 
 #define BINARY_OPERATOR_PS(op) \
@@ -838,6 +853,7 @@ Normal3<T> FaceForward(const Normal3_arg<T> n1, const Normal3_arg<T> n2)
 
 #pragma region Ray
 
+// TODO: Medium not implemented
 struct Ray
 {
     //using Vector3_arg = Vector3<T>&;
@@ -885,7 +901,7 @@ Ray::Ray(const Point3_arg<fp_t> origin,
 
 
 // ---------------------------------------
-// ---------- UTILITY FUNCTIONS ----------
+// ------- FUNCTION CALL OPERATORS -------
 // ---------------------------------------
 
 //PBR_CNSTEXPR
@@ -970,13 +986,13 @@ void RayDifferential::ScaleDifferentials(fp_t scale)
 
 
 
-
 // ******************************************************************************
 // ---------------------------------- BOUNDS ------------------------------------
 // ******************************************************************************
 
 #pragma region Bounds
 
+// TODO: May be Bounds3 doesn't nedd to be templated, same as Ray
 template<typename T>
 struct Bounds3
 {

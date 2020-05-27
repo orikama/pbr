@@ -1,11 +1,8 @@
 #cmake_minimum_required(VERSION 3.17)
 #project(pbr_utests CXX)
 
-
-#set(TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests")
-set(pbr_utests_SOURCES test_geometry.cpp)
-
-#enable_testing()
+set(pbr_utests_SOURCES test_geometry.cpp
+                       test_transform.cpp)
 
 
 add_executable(pbr_utests main.cpp doctest.h ${pbr_utests_SOURCES})

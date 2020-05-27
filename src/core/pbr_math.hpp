@@ -7,24 +7,15 @@
 
 #include "core.hpp"
 
+// TODO: Use C++ 20 concepts
 
 namespace pbr {
 
 constexpr fp_t c_Infinity = std::numeric_limits<fp_t>::infinity();
 
 
-template <typename T> inline
-bool isNaN(const T x)
-{
-    if constexpr (std::numeric_limits<T>::is_iec559)
-        return std::isnan(x);
-    else
-        return false;
-}
-
-
 template<typename T> inline
-T sqrt(const T v)
+T Sqrt(const T v)
 {
     static_assert(std::numeric_limits<T>::is_iec559);
 
@@ -44,29 +35,29 @@ T sqrt(const T v)
 //    else
 //        return std::cbrt(v);
 //}
-//
-//template<typename T>
-//inline T sin(const T v)
-//{
-//    static_assert(std::numeric_limits<T>::is_iec559);
-//
-//    if constexpr (std::is_same<T, float>())
-//        return std::sinf(v);
-//    else
-//        return std::sin(v);
-//}
-//
-//template<typename T>
-//inline T cos(const T v)
-//{
-//    static_assert(std::numeric_limits<T>::is_iec559);
-//
-//    if constexpr (std::is_same<T, float>())
-//        return std::cosf(v);
-//    else
-//        return std::cos(v);
-//}
-//
+
+template<typename T> inline
+T Sin(const T v)
+{
+   static_assert(std::numeric_limits<T>::is_iec559);
+
+   if constexpr (std::is_same<T, float>())
+       return std::sinf(v);
+   else
+       return std::sin(v);
+}
+
+template<typename T> inline
+T Cos(const T v)
+{
+   static_assert(std::numeric_limits<T>::is_iec559);
+
+   if constexpr (std::is_same<T, float>())
+       return std::cosf(v);
+   else
+       return std::cos(v);
+}
+
 //template<typename T>
 //inline T tan(const T v)
 //{
@@ -89,19 +80,19 @@ T sqrt(const T v)
 //    else
 //        return std::pow(value, power);
 //}
-//
-//
-//template<typename T>
-//inline constexpr T radians(T degrees)
-//{
-//    static_assert(std::numeric_limits<T>::is_iec559);
-//
-//    return degrees * std::numbers::pi_v<T> / 180;
-//}
+
+
+template<typename T> inline constexpr
+T Radians(T degrees)
+{
+   static_assert(std::numeric_limits<T>::is_iec559);
+
+   return degrees * std::numbers::pi_v<T> / static_cast<T>(180);
+}
 
 
 template<typename T> inline
-T floor(const T v)
+T Floor(const T v)
 {
     static_assert(std::numeric_limits<T>::is_iec559);
 
@@ -112,7 +103,7 @@ T floor(const T v)
 }
 
 template<typename T> inline
-T ceil(const T v)
+T Ceil(const T v)
 {
     static_assert(std::numeric_limits<T>::is_iec559);
 
@@ -124,13 +115,13 @@ T ceil(const T v)
 
 
 template<typename T> constexpr inline
-T max3(const T x, const T y, const T z)
+T Max3(const T x, const T y, const T z)
 {
     return std::max(x, std::max(y, z));
 }
 
 template<typename T> constexpr inline
-T min3(const T x, const T y, const T z)
+T Min3(const T x, const T y, const T z)
 {
     return std::min(x, std::min(y, z));
 }
