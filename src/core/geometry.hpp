@@ -23,10 +23,233 @@ bool isNaN(const T x)
 namespace pbr {
 
 // ******************************************************************************
-// ----------------------------------- VECTOR -----------------------------------
+// ---------------------------------- VECTOR2 -----------------------------------
 // ******************************************************************************
 
-#pragma region Vector
+#pragma region Vector2
+
+template<typename T>
+struct Vector2
+{
+    using Vector2_arg = Vector2<T>&;
+
+    PBR_CNSTEXPR Vector2();
+    PBR_CNSTEXPR explicit Vector2(T value);
+    PBR_CNSTEXPR explicit Vector2(T x, T y);
+
+
+    PBR_CNSTEXPR PBR_INLINE Vector2<T>& operator+=(const Vector2_arg v);
+    PBR_CNSTEXPR PBR_INLINE Vector2<T>& operator-=(const Vector2_arg v);
+
+    PBR_CNSTEXPR PBR_INLINE Vector2<T>& operator*=(const T scalar);
+    PBR_CNSTEXPR PBR_INLINE Vector2<T>& operator/=(const T scalar);
+
+    friend auto operator<=>(const Vector2<T>, const Vector2<T>) = default;
+
+
+    PBR_CNSTEXPR PBR_INLINE T LengthSquared() const;
+    PBR_INLINE T Length() const;
+
+    bool HasNaNs() const
+    {
+        return isNaN(x) || isNaN(y);
+    }
+
+
+    T x, y;
+};
+
+using Vector2_t = Vector2<fp_t>;
+template<typename T> using Vector2_arg = Vector2<T>&;
+
+
+// ---------------------------------------
+// ------------ CONSTRUCTORS -------------
+// ---------------------------------------
+
+template<typename T> PBR_CNSTEXPR
+Vector2<T>::Vector2()
+    : x(0), y(0)
+{}
+
+template<typename T> PBR_CNSTEXPR
+Vector2<T>::Vector2(T value)
+    : x(value), y(value)
+{
+    PBR_ASSERT(!HasNaNs());
+}
+
+template<typename T> PBR_CNSTEXPR
+Vector2<T>::Vector2(T x, T y)
+    : x(x), y(y)
+{
+    PBR_ASSERT(!HasNaNs());
+}
+
+
+// ---------------------------------------
+// ---- COMPOUND ARITHMETIC OPERATORS ----
+// ---------------------------------------
+
+#define COMPOUND_OPERATOR_V(op) \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+    Vector2<T>& Vector2<T>::operator op(const Vector2_arg v) \
+    { \
+        PBR_ASSERT(!v.HasNaNs()); \
+        x op v.x; \
+        y op v.y; \
+        return *this; \
+    }
+
+COMPOUND_OPERATOR_V(+=)
+COMPOUND_OPERATOR_V(-=)
+
+
+#define COMPOUND_OPERATOR_S(op) \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+    Vector2<T>& Vector2<T>::operator op(const T scalar) \
+    { \
+        x op scalar; \
+        y op scalar; \
+        return *this; \
+    }
+
+COMPOUND_OPERATOR_S(*=)
+
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+Vector2<T>& Vector2<T>::operator/=(const T scalar)
+{
+    PBR_ASSERT(scalar != 0);
+
+    if constexpr (std::numeric_limits<T>::is_iec559) {
+        T inv = static_cast<T>(1) / scalar;
+        x *= inv; y *= inv;
+        return *this;
+    }
+    else {
+        x /= scalar; y /= scalar;
+        return *this;
+    }
+}
+
+
+// ---------------------------------------
+// ----- UNARY ARITHMETIC OPERATORS ------
+// ---------------------------------------
+
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+Vector2<T> operator-(const Vector2_arg<T> v)
+{
+    return Vector2<T>(-v.x, -v.y);
+}
+
+
+// ---------------------------------------
+// ----- BINARY ARITHMETIC OPERATORS -----
+// ---------------------------------------
+
+#define BINARY_OPERATOR_VV(op) \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+    Vector2<T> operator op(const Vector2_arg<T> v1, const Vector2_arg<T> v2) { \
+        PBR_ASSERT(!v2.HasNaNs()); \
+        return Vector2<T>(v1.x op v2.x, v1.y op v2.y); \
+    }
+
+BINARY_OPERATOR_VV(+)
+BINARY_OPERATOR_VV(-)
+
+
+#define BINARY_OPERATOR_VS(op) \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+    Vector2<T> operator op(const Vector2_arg<T> v, const T scalar) { \
+        return Vector2<T>(v.x op scalar, v.y op scalar); \
+    }
+
+BINARY_OPERATOR_VS(*)
+
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+Vector2<T> operator/(const Vector2_arg<T> v, const T scalar)
+{
+    PBR_ASSERT(scalar != 0);
+
+    if constexpr (std::numeric_limits<T>::is_iec559) {
+        T inv = static_cast<T>(1) / scalar;
+        return Vector2<T>(v.x * inv, v.y * inv);
+    }
+    else
+        return Vector2<T>(v.x / scalar, v.y / scalar);
+}
+
+
+#define BINARY_OPERATOR_SV(op) \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+    Vector2<T> operator op(const T scalar, const Vector2_arg<T> v) { \
+        return Vector2<T>(v.x op scalar, v.y op scalar); \
+    }
+
+BINARY_OPERATOR_SV(*)
+
+
+#undef COMPOUND_OPERATOR_V
+#undef COMPOUND_OPERATOR_S
+
+#undef BINARY_OPERATOR_VV
+#undef BINARY_OPERATOR_VS
+#undef BINARY_OPERATOR_SV
+
+
+// ---------------------------------------
+// ---------- UTILITY FUNCTIONS ----------
+// ---------------------------------------
+
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+T Vector2<T>::LengthSquared() const
+{
+    return x * x + y * y;
+}
+
+template<typename T> PBR_INLINE
+T Vector2<T>::Length() const
+{
+    return pbr::sqrt(LengthSquared());
+}
+
+
+template<typename T> PBR_INLINE
+Vector2<T> Normalize(const Vector2_arg<T> v)
+{
+    return v / v.Length();
+}
+
+template<typename T> PBR_INLINE
+Vector2<T> Abs(const Vector2_arg<T> v)
+{
+    return Vector2<T>(std::abs(v.x), std::abs(v.y));
+}
+
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+T Dot(const Vector2_arg<T> v1, const Vector2_arg<T> v2)
+{
+    PBR_ASSERT(!v1.HasNaNs() && !v2.HasNaNs());
+    return v1.x * v2.x + v1.y * v2.y;
+}
+
+template<typename T> PBR_INLINE
+T AbsDot(const Vector2_arg<T> v1, const Vector2_arg<T> v2)
+{
+    PBR_ASSERT(!v1.HasNaNs() && !v2.HasNaNs());
+    return std::abs(Dot(v1, v2));
+}
+
+
+#pragma endregion Vector2
+
+
+// ******************************************************************************
+// ---------------------------------- VECTOR3 -----------------------------------
+// ******************************************************************************
+
+#pragma region Vector3
 
 template<typename T>
 struct Vector3
@@ -38,16 +261,13 @@ struct Vector3
     PBR_CNSTEXPR explicit Vector3(T x, T y, T z);
 
 
-    PBR_CNSTEXPR PBR_INLINE T LengthSquared() const;
-    PBR_INLINE T Length() const;
-
     PBR_CNSTEXPR PBR_INLINE Vector3<T>& operator+=(const Vector3_arg v);
     PBR_CNSTEXPR PBR_INLINE Vector3<T>& operator-=(const Vector3_arg v);
 
     PBR_CNSTEXPR PBR_INLINE Vector3<T>& operator*=(const T scalar);
     PBR_CNSTEXPR PBR_INLINE Vector3<T>& operator/=(const T scalar);
 
-    friend auto operator<=>(const Vector3<T>, const Vector3<T>) = default;
+    friend auto operator<=>(const Vector3_arg<T>, const Vector3_arg<T>) = default;
 
     /*T operator[](i32 i) const
     {
@@ -64,6 +284,9 @@ struct Vector3
         return z;
     }*/
 
+    PBR_CNSTEXPR PBR_INLINE T LengthSquared() const;
+    PBR_INLINE T Length() const;
+
     bool HasNaNs() const
     {
         return isNaN(x) || isNaN(y) || isNaN(z);
@@ -73,8 +296,7 @@ struct Vector3
     T x, y, z;
 };
 
-using Vector3f = Vector3<f32>;
-using Vector3d = Vector3<f64>;
+using Vector3_t = Vector3<fp_t>;
 template<typename T> using Vector3_arg = Vector3<T>&;
 
 
@@ -119,7 +341,6 @@ Vector3<T>::Vector3(T x, T y, T z)
 
 COMPOUND_OPERATOR_V(+=)
 COMPOUND_OPERATOR_V(-=)
-//COMPOUND_OPERATOR_V(*=)
 
 #define COMPOUND_OPERATOR_S(op) \
     template<typename T> PBR_CNSTEXPR PBR_INLINE \
@@ -131,8 +352,6 @@ COMPOUND_OPERATOR_V(-=)
         return *this; \
     }
 
-//COMPOUND_OPERATOR_S(+=)
-//COMPOUND_OPERATOR_S(-=)
 COMPOUND_OPERATOR_S(*=)
 
 template<typename T> PBR_CNSTEXPR PBR_INLINE
@@ -185,8 +404,6 @@ BINARY_OPERATOR_VV(*)
         return Vector3<T>(v.x op scalar, v.y op scalar, v.z op scalar); \
     }
 
-//BINARY_OPERATOR_VS(+)
-//BINARY_OPERATOR_VS(-)
 BINARY_OPERATOR_VS(*)
 
 template<typename T> PBR_CNSTEXPR PBR_INLINE
@@ -209,8 +426,6 @@ Vector3<T> operator/(const Vector3_arg<T> v, const T scalar)
         return Vector3<T>(v.x op scalar, v.y op scalar, v.z op scalar); \
     }
 
-//BINARY_OPERATOR_SV(+)
-//BINARY_OPERATOR_SV(-)
 BINARY_OPERATOR_SV(*)
 
 
@@ -245,7 +460,7 @@ Vector3<T> Normalize(const Vector3_arg<T> v)
 }
 
 template<typename T> PBR_INLINE
-T Abs(const Vector3_arg<T> v)
+Vector3<T> Abs(const Vector3_arg<T> v)
 {
     return Vector3<T>(std::abs(v.x), std::abs(v.y), std::abs(v.z));
 }
@@ -333,13 +548,192 @@ Vector3<T> CoordinateSystem(const Vector3_arg<T> v1, Vector3<T>& v2, Vector3<T>&
     v3 = Cross(v1, v2);
 }
 
-#pragma endregion Vector
+
+#pragma endregion Vector3
+
 
 // ******************************************************************************
-// ----------------------------------- POINT ------------------------------------
+// ----------------------------------- POINT2 -----------------------------------
 // ******************************************************************************
 
-#pragma region Point
+#pragma region Point2
+
+template<typename T>
+struct Point2
+{
+    using Point2_arg = Point2<T>&;
+
+    PBR_CNSTEXPR Point2();
+    PBR_CNSTEXPR explicit Point2(T value);
+    PBR_CNSTEXPR explicit Point2(T x, T y);
+
+
+    PBR_CNSTEXPR PBR_INLINE Point2<T>& operator+=(const Point2_arg v);
+    PBR_CNSTEXPR PBR_INLINE Point2<T>& operator-=(const Point2_arg v);
+
+    PBR_CNSTEXPR PBR_INLINE Point2<T>& operator*=(const T scalar);
+    PBR_CNSTEXPR PBR_INLINE Point2<T>& operator/=(const T scalar);
+
+    friend auto operator<=>(const Point2<T>, const Point2<T>) = default;
+
+
+    PBR_CNSTEXPR PBR_INLINE T LengthSquared() const;
+    PBR_INLINE T Length() const;
+
+    bool HasNaNs() const
+    {
+        return isNaN(x) || isNaN(y);
+    }
+
+
+    T x, y;
+};
+
+using Point2_t = Point2<fp_t>;
+template<typename T> using Point2_arg = Point2<T>&;
+
+
+// ---------------------------------------
+// ------------ CONSTRUCTORS -------------
+// ---------------------------------------
+
+template<typename T> PBR_CNSTEXPR
+Point2<T>::Point2()
+    : x(0), y(0)
+{}
+
+template<typename T> PBR_CNSTEXPR
+Point2<T>::Point2(T value)
+    : x(value), y(value)
+{
+    PBR_ASSERT(!HasNaNs());
+}
+
+template<typename T> PBR_CNSTEXPR
+Point2<T>::Point2(T x, T y)
+    : x(x), y(y)
+{
+    PBR_ASSERT(!HasNaNs());
+}
+
+
+// ---------------------------------------
+// ---- COMPOUND ARITHMETIC OPERATORS ----
+// ---------------------------------------
+
+#define COMPOUND_OPERATOR_P(op) \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+    Point2<T>& Point2<T>::operator op(const Point2_arg p) \
+    { \
+        PBR_ASSERT(!p.HasNaNs()); \
+        x op p.x; \
+        y op p.y; \
+        return *this; \
+    }
+
+COMPOUND_OPERATOR_P(+=)
+
+
+#define COMPOUND_OPERATOR_S(op) \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+    Point2<T>& Point2<T>::operator op(const T scalar) \
+    { \
+        x op scalar; \
+        y op scalar; \
+        return *this; \
+    }
+
+COMPOUND_OPERATOR_S(*=)
+
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+Point2<T>& Point2<T>::operator/=(const T scalar)
+{
+    PBR_ASSERT(scalar != 0);
+
+    if constexpr (std::numeric_limits<T>::is_iec559) {
+        T inv = static_cast<T>(1) / scalar;
+        x *= inv; y *= inv;
+        return *this;
+    }
+    else {
+        x /= scalar; y /= scalar;
+        return *this;
+    }
+}
+
+
+// ---------------------------------------
+// ----- UNARY ARITHMETIC OPERATORS ------
+// ---------------------------------------
+
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+Point2<T> operator-(const Point2_arg<T> p)
+{
+    return Point2<T>(-p.x, -p.y);
+}
+
+
+// ---------------------------------------
+// ----- BINARY ARITHMETIC OPERATORS -----
+// ---------------------------------------
+
+#define BINARY_OPERATOR_PP(op) \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+    Point2<T> operator op(const Point2_arg<T> p1, const Point2_arg<T> p2) { \
+        PBR_ASSERT(!p2.HasNaNs()); \
+        return Point2<T>(p1.x op p2.x, p1.y op p2.y); \
+    }
+
+BINARY_OPERATOR_PP(+)
+
+
+#define BINARY_OPERATOR_PS(op) \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+    Point2<T> operator op(const Point2_arg<T> p, const T scalar) { \
+        return Point2<T>(p.x op scalar, p.y op scalar); \
+    }
+
+BINARY_OPERATOR_PS(*)
+
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+Point2<T> operator/(const Point2_arg<T> p, const T scalar)
+{
+    PBR_ASSERT(scalar != 0);
+
+    if constexpr (std::numeric_limits<T>::is_iec559) {
+        T inv = static_cast<T>(1) / scalar;
+        return Point2<T>(p.x * inv, p.y * inv);
+    }
+    else
+        return Point2<T>(p.x / scalar, p.y / scalar);
+}
+
+
+#define BINARY_OPERATOR_SP(op) \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+    Point2<T> operator op(const T scalar, const Point2_arg<T> p) { \
+        return Point2<T>(p.x op scalar, p.y op scalar); \
+    }
+
+BINARY_OPERATOR_SP(*)
+
+
+#undef COMPOUND_OPERATOR_P
+#undef COMPOUND_OPERATOR_S
+
+#undef BINARY_OPERATOR_PP
+#undef BINARY_OPERATOR_PS
+#undef BINARY_OPERATOR_SP
+
+
+#pragma endregion Point2
+
+
+// ******************************************************************************
+// ----------------------------------- POINT3 -----------------------------------
+// ******************************************************************************
+
+#pragma region Point3
 
 template<typename T>
 struct Point3
@@ -369,8 +763,7 @@ struct Point3
     T x, y, z;
 };
 
-using Point3f = Point3<f32>;
-using Point3d = Point3<f64>;
+using Point3_t = Point3<fp_t>;
 template<typename T> using Point3_arg = Point3<T>&;
 
 
@@ -575,14 +968,15 @@ T Distance(const Point3_arg<T> p1, const Point3_arg<T> p2) {
     return (p1 - p2).Length();
 }
 
-#pragma endregion Point
+
+#pragma endregion Point3
 
 
 // ******************************************************************************
-// ----------------------------------- NORMAL -----------------------------------
+// ---------------------------------- NORMAL3 -----------------------------------
 // ******************************************************************************
 
-#pragma region Normal
+#pragma region Normal3
 
 template<typename T>
 struct Normal3
@@ -615,8 +1009,7 @@ struct Normal3
     T x, y, z;
 };
 
-using Normal3f = Normal3<f32>;
-using Normal3d = Normal3<f64>;
+using Normal3_t = Normal3<fp_t>;
 template<typename T> using Normal3_arg = Normal3<T>&;
 
 
@@ -844,7 +1237,7 @@ Normal3<T> FaceForward(const Normal3_arg<T> n1, const Normal3_arg<T> n2)
     return (Dot(n1,n2) < static_cast<T>(0)) ? -n1 : n1;
 }
 
-#pragma endregion Normal
+#pragma endregion Normal3
 
 
 // ******************************************************************************
@@ -865,11 +1258,11 @@ struct Ray
                               fp_t time = static_cast<fp_t>(0));
 
 
-    //PBR_CNSTEXPR Point3<fp_t> operator()(fp_t t) const;
+    //PBR_CNSTEXPR Point3_t operator()(fp_t t) const;
 
 
-    Point3<fp_t> origin;
-    Vector3<fp_t> direction;
+    Point3_t origin;
+    Vector3_t direction;
     //const Medium *medium;
     fp_t tMax;
     fp_t time;
@@ -905,7 +1298,7 @@ Ray::Ray(const Point3_arg<fp_t> origin,
 // ---------------------------------------
 
 //PBR_CNSTEXPR
-//Point3<fp_t> Ray::operator()(fp_t t) const
+//Point3_t Ray::operator()(fp_t t) const
 //{
 //    return origin + (direction * t);
 //}
@@ -934,8 +1327,8 @@ struct RayDifferential : public Ray
     PBR_CNSTEXPR void ScaleDifferentials(fp_t scale);
 
 
-    Point3<fp_t> rxOrigin, ryOrigin;
-    Vector3<fp_t> rxDirection, ryDirection;
+    Point3_t rxOrigin, ryOrigin;
+    Vector3_t rxDirection, ryDirection;
     bool hasDifferentials;
 };
 
@@ -982,15 +1375,15 @@ void RayDifferential::ScaleDifferentials(fp_t scale)
     ryDirection = direction + (ryDirection - direction) * scale;
 }
 
+
 #pragma endregion RayDifferential
 
 
-
 // ******************************************************************************
-// ---------------------------------- BOUNDS ------------------------------------
+// ---------------------------------- BOUNDS3 -----------------------------------
 // ******************************************************************************
 
-#pragma region Bounds
+#pragma region Bounds3
 
 // TODO: May be Bounds3 doesn't nedd to be templated, same as Ray
 template<typename T>
@@ -1024,6 +1417,7 @@ struct Bounds3
     Point3<T> pMin, pMax;
 };
 
+using Bounds3_t = Bounds3<fp_t>;
 template<typename T> using Bounds3_arg = Bounds3<T>&;
 
 
@@ -1185,6 +1579,8 @@ bool InsideExclusive(const Point3_arg<T> p, const Bounds3_arg<T> b)
             p.z >= b.pMin.z && p.z < b.pMax.z);
 }
 
+
+#pragma endregion Bounds3
 
 
 } // namespace pbr

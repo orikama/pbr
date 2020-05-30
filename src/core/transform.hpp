@@ -195,12 +195,12 @@ struct Transform
     PBR_CNSTEXPR bool SwapsHandedness() const;
 
     // TODO: operator() is templated in the original for some reason that needs to be figured out
-    PBR_CNSTEXPR PBR_INLINE Point3<fp_t> operator()(const Point3_arg<fp_t> p) const;
-    PBR_CNSTEXPR PBR_INLINE Vector3<fp_t> operator()(const Vector3_arg<fp_t> p) const;
-    PBR_CNSTEXPR PBR_INLINE Normal3<fp_t> operator()(const Normal3_arg<fp_t> p) const;
+    PBR_CNSTEXPR PBR_INLINE Point3_t operator()(const Point3_arg<fp_t> p) const;
+    PBR_CNSTEXPR PBR_INLINE Vector3_t operator()(const Vector3_arg<fp_t> p) const;
+    PBR_CNSTEXPR PBR_INLINE Normal3_t operator()(const Normal3_arg<fp_t> p) const;
     //PBR_CNSTEXPR PBR_INLINE Ray operator()(const Ray_arg r) const;
     //PBR_CNSTEXPR PBR_INLINE RayDifferential operator()(const RayDifferential_arg r) const;
-    //PBR_CNSTEXPR PBR_INLINE Bounds3<fp_t> operator()(const Bounds3_arg<fp_t> &b) const;
+    //PBR_CNSTEXPR PBR_INLINE Bounds3_t operator()(const Bounds3_arg<fp_t> &b) const;
 
 // NOTE: marked as private in the original implementation
     Matrix4x4 m;
@@ -252,33 +252,33 @@ Transform operator*(const Transform &t1, const Transform &t2) {
 // NOTE: I think m[3] row will be zero every time and only m[3][3] will be non zero,
 //       so it can can be optimized
 PBR_CNSTEXPR PBR_INLINE
-Point3<fp_t> Transform::operator()(const Point3_arg<fp_t> p) const {
+Point3_t Transform::operator()(const Point3_arg<fp_t> p) const {
     const fp_t xp = m[0][0] * p.x + m[0][1] * p.y + m[0][2] * p.z + m[0][3];
     const fp_t yp = m[1][0] * p.x + m[1][1] * p.y + m[1][2] * p.z + m[1][3];
     const fp_t zp = m[2][0] * p.x + m[2][1] * p.y + m[2][2] * p.z + m[2][3];
     const fp_t wp = m[3][0] * p.x + m[3][1] * p.y + m[3][2] * p.z + m[3][3];
     PBR_ASSERT(wp != 0);
     if (wp == 1)
-        return Point3<fp_t>(xp, yp, zp);
+        return Point3_t(xp, yp, zp);
     else
-        // NOTE: Will be Point3<fp_t>(xp / wp, yp / wp, zp / wp); more effective ?
-        return Point3<fp_t>(xp, yp, zp) / wp;
+        // NOTE: Will be Point3_t(xp / wp, yp / wp, zp / wp); more effective ?
+        return Point3_t(xp, yp, zp) / wp;
 }
 
 PBR_CNSTEXPR PBR_INLINE
-Vector3<fp_t> Transform::operator()(const Vector3_arg<fp_t> v) const
+Vector3_t Transform::operator()(const Vector3_arg<fp_t> v) const
 {
-    return Vector3<fp_t>(m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z,
-                         m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z,
-                         m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z);
+    return Vector3_t(m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z,
+                     m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z,
+                     m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z);
 }
 
 PBR_CNSTEXPR PBR_INLINE
-Normal3<fp_t> Transform::operator()(const Normal3_arg<fp_t> n) const
+Normal3_t Transform::operator()(const Normal3_arg<fp_t> n) const
 {
-    return Normal3<fp_t>(mInv[0][0] * n.x + mInv[1][0] * n.y + mInv[2][0] * n.z,
-                         mInv[0][1] * n.x + mInv[1][1] * n.y + mInv[2][1] * n.z,
-                         mInv[0][2] * n.x + mInv[1][2] * n.y + mInv[2][2] * n.z);
+    return Normal3_t(mInv[0][0] * n.x + mInv[1][0] * n.y + mInv[2][0] * n.z,
+                     mInv[0][1] * n.x + mInv[1][1] * n.y + mInv[2][1] * n.z,
+                     mInv[0][2] * n.x + mInv[1][2] * n.y + mInv[2][2] * n.z);
 }
 
 // TODO: I don't understand shit about implementation of this method
@@ -297,9 +297,9 @@ Normal3<fp_t> Transform::operator()(const Normal3_arg<fp_t> n) const
 
 // TODO: same as for Ray, and definitely should be optimized
 // PBR_CNSTEXPR PBR_INLINE
-// Bounds3<fp_t> Transform::operator()(const Bounds3_arg<fp_t> &b) const {
+// Bounds3_t Transform::operator()(const Bounds3_arg<fp_t> &b) const {
 //     const Transform &M = *this;
-//     Bounds3<fp_t> ret(M(Point3f(b.pMin.x, b.pMin.y, b.pMin.z)));
+//     Bounds3_t ret(M(Point3f(b.pMin.x, b.pMin.y, b.pMin.z)));
 //     ret = Union(ret, M(Point3f(b.pMax.x, b.pMin.y, b.pMin.z)));
 //     ret = Union(ret, M(Point3f(b.pMin.x, b.pMax.y, b.pMin.z)));
 //     ret = Union(ret, M(Point3f(b.pMin.x, b.pMin.y, b.pMax.z)));

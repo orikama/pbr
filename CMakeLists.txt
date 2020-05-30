@@ -12,7 +12,8 @@ set(pbr_lib_SOURCES ${pbr_SRC_DIR}/core/core.hpp
                     ${pbr_SRC_DIR}/core/pbr_concepts.hpp
                     ${pbr_SRC_DIR}/core/geometry.hpp
                     ${pbr_SRC_DIR}/core/geometry.cpp
-                    ${pbr_SRC_DIR}/core/transform.hpp)
+                    ${pbr_SRC_DIR}/core/transform.hpp
+                    ${pbr_SRC_DIR}/core/interaction.hpp)
 
 
 add_library(pbr_lib STATIC ${pbr_lib_SOURCES})

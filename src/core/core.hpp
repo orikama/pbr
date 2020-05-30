@@ -21,6 +21,7 @@ using fp_t = f32;
     #include <cstdio>
     #define PBR_ASSERT(EXPRESSION) \
         { if(!(EXPRESSION)) { \
+            printf("Assertion Failed: %s\n\tFile: %s\n\tLine: %i", #EXPRESSION, __FILE__, __LINE__); \
             abort(); \
         } }
     #define PBR_ASSERT_MSG(EXPRESSION, MESSAGE) \
