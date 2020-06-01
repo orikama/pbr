@@ -2,17 +2,13 @@
 
 #include <cmath>
 #include <algorithm>
-#include <limits>
 #include <numbers>
-
+#include <limits>
 #include "core.hpp"
 
 // TODO: Use C++ 20 concepts
 
 namespace pbr {
-
-constexpr fp_t c_Infinity = std::numeric_limits<fp_t>::infinity();
-
 
 template<typename T> inline
 T Sqrt(const T v)

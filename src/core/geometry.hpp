@@ -1254,7 +1254,7 @@ struct Ray
     PBR_CNSTEXPR Ray();
     PBR_CNSTEXPR explicit Ray(const Point3_arg<fp_t> origin,
                               const Vector3_arg<fp_t> direction,
-                              fp_t tMax = c_Infinity,
+                              fp_t tMax = constants::infinity,
                               fp_t time = static_cast<fp_t>(0));
 
 
@@ -1277,14 +1277,14 @@ using Ray_arg = Ray&;
 
 PBR_CNSTEXPR
 Ray::Ray()
-    : tMax(c_Infinity)
+    : tMax(constants::infinity)
     , time(static_cast<fp_t>(0))
 {}
 
 PBR_CNSTEXPR
 Ray::Ray(const Point3_arg<fp_t> origin,
          const Vector3_arg<fp_t> direction,
-         fp_t tMax, /* = c_Infinity */
+         fp_t tMax, /* = constants::infinity */
          fp_t time /* = static_cast<fp_t>(0)) */)
     : origin(origin)
     , direction(direction)
@@ -1319,7 +1319,7 @@ struct RayDifferential : public Ray
     PBR_CNSTEXPR RayDifferential();
     PBR_CNSTEXPR explicit RayDifferential(const Point3_arg<fp_t> origin,
                                           const Vector3_arg<fp_t> direction,
-                                          fp_t tMax = c_Infinity,
+                                          fp_t tMax = constants::infinity,
                                           fp_t time = static_cast<fp_t>(0));
     PBR_CNSTEXPR explicit RayDifferential(const Ray_arg ray);
 
@@ -1347,7 +1347,7 @@ RayDifferential::RayDifferential()
 PBR_CNSTEXPR
 RayDifferential::RayDifferential(const Point3_arg<fp_t> origin,
                                  const Vector3_arg<fp_t> direction,
-                                 fp_t tMax, /* = c_Infinity*/
+                                 fp_t tMax, /* = constants::infinity*/
                                  fp_t time /* = static_cast<fp_t>(0)*/)
     : Ray(origin, direction, tMax, time)
     , hasDifferentials(false)
