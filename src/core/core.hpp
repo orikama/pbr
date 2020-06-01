@@ -1,5 +1,9 @@
 #pragma once
 
+
+#define PBR_ENABLE_STATS_COUNT 1
+
+
 //#include "pbr_concepts.hpp"
 
 #include <limits>
