@@ -312,7 +312,7 @@ Normal3_t Transform::operator()(const Normal3_arg<fp_t> n) const
 
 
 // ---------------------------------------
-// ---------- UTILITY FUNCTIONS ----------
+// --------------- METHODS ---------------
 // ---------------------------------------
 
 // NOTE: Method name is shit
@@ -325,6 +325,10 @@ bool Transform::SwapsHandedness() const
     return det < 0;
 }
 
+
+// ---------------------------------------
+// ---------- UTILITY FUNCTIONS ----------
+// ---------------------------------------
 
 PBR_CNSTEXPR
 Transform Inverse(const Transform &t)
@@ -447,3 +451,6 @@ Transform LookAt(const Point3_arg<fp_t> pos, const Point3_arg<fp_t> look, const 
 #pragma endregion Transform
 
 } // namespace pbr
+
+#undef PBR_CNSTEXPR
+#undef PBR_INLINE

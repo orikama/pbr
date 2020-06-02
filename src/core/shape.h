@@ -29,7 +29,7 @@ public:
                            SurfaceInteraction *out_isect,
                            bool testAlphaTexture = true) const = 0;
     // NOTE: Why this method is defined in abstract class what the use of it ?
-    // NOTE: Why use different name, why not just Intersect() ?
+    // NOTE: Why use different name, why not just Intersect() ? Should be something like IsIntersecting()
     virtual bool IntersectP(const Ray_arg ray,
                             bool testAlphaTexture = true) const;
 
@@ -41,8 +41,5 @@ public:
     const bool reverseOrientation;
     const bool transformSwapsHandedness;
 };
-
-
-
 
 } // namespace pbr

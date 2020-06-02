@@ -199,7 +199,7 @@ BINARY_OPERATOR_SV(*)
 
 
 // ---------------------------------------
-// ---------- UTILITY FUNCTIONS ----------
+// --------------- METHODS ---------------
 // ---------------------------------------
 
 template<typename T> PBR_CNSTEXPR PBR_INLINE
@@ -214,6 +214,10 @@ T Vector2<T>::Length() const
     return pbr::sqrt(LengthSquared());
 }
 
+
+// ---------------------------------------
+// ---------- UTILITY FUNCTIONS ----------
+// ---------------------------------------
 
 template<typename T> PBR_INLINE
 Vector2<T> Normalize(const Vector2_arg<T> v)
@@ -438,7 +442,7 @@ BINARY_OPERATOR_SV(*)
 
 
 // ---------------------------------------
-// ---------- UTILITY FUNCTIONS ----------
+// --------------- METHODS ---------------
 // ---------------------------------------
 
 template<typename T> PBR_CNSTEXPR PBR_INLINE
@@ -452,6 +456,11 @@ T Vector3<T>::Length() const
 {
     return pbr::sqrt(LengthSquared());
 }
+
+
+// ---------------------------------------
+// ---------- UTILITY FUNCTIONS ----------
+// ---------------------------------------
 
 template<typename T> PBR_INLINE
 Vector3<T> Normalize(const Vector3_arg<T> v)
@@ -1156,7 +1165,7 @@ Vector3<T> operator/(const Normal3_arg<T> n, const T scalar)
 
 
 // ---------------------------------------
-// ---------- UTILITY FUNCTIONS ----------
+// --------------- METHODS ---------------
 // ---------------------------------------
 
 template<typename T> PBR_CNSTEXPR PBR_INLINE
@@ -1170,6 +1179,11 @@ T Normal3<T>::Length() const
 {
     return pbr::sqrt(LengthSquared());
 }
+
+
+// ---------------------------------------
+// ---------- UTILITY FUNCTIONS ----------
+// ---------------------------------------
 
 template<typename T> PBR_INLINE
 Normal3<T> Normalize(const Normal3_arg<T> n)
@@ -1361,7 +1375,7 @@ RayDifferential::RayDifferential(const Ray_arg ray)
 
 
 // ---------------------------------------
-// ---------- UTILITY FUNCTIONS ----------
+// --------------- METHODS ---------------
 // ---------------------------------------
 
 // NOTE: possible optimization ?
@@ -1455,7 +1469,7 @@ Bounds3<T>::Bounds3(const Point3_arg<T> p1, const Point3_arg<T> p2)
 
 
 // ---------------------------------------
-// ---------- UTILITY FUNCTIONS ----------
+// --------------- METHODS ---------------
 // ---------------------------------------
 
 template<typename T> PBR_CNSTEXPR PBR_INLINE
@@ -1596,6 +1610,10 @@ bool Bounds3<T>::IntersectP(const Ray_arg ray, const Vector3_arg<T> invDir, cons
 }
 
 
+// ---------------------------------------
+// ---------- UTILITY FUNCTIONS ----------
+// --------------------------------------
+
 // NOTE: Next 3 functions assign pMin and pMax directly instead of using constructor,
 //       because it's shit, but i don't know what can i do with it. And as stated in pbrt implementation
 //       this in turn, breaks returning an invalid bound for the case where we Intersect() non-overlapping bounds.
@@ -1659,7 +1677,6 @@ bool InsideExclusive(const Point3_arg<T> p, const Bounds3_arg<T> b)
 
 
 #pragma endregion Bounds3
-
 
 } // namespace pbr
 
