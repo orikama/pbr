@@ -1413,6 +1413,15 @@ struct Bounds3
 
     PBR_CNSTEXPR PBR_INLINE void BoundingSphere(Point3<T> &center, fp_t &radius) const;
 
+    // TODO: std::optional<fp_t,fp_t> ? And do i really need to pass by pointer ?
+    // Checks for a ray-box intersection and returns two values of the intersection, if any
+    PBR_CNSTEXPR PBR_INLINE bool IntersectP(const Ray_arg ray,
+                                            fp_t *out_hit0 = nullptr,
+                                            fp_t *out_hit1 = nullptr) const;
+    PBR_CNSTEXPR PBR_INLINE bool IntersectP(const Ray_arg ray,
+                                            const Vector3_arg<T> invDir,
+                                            const i32 dirIsNeg[3]) const;
+
 
     Point3<T> pMin, pMax;
 };
@@ -1520,7 +1529,76 @@ void Bounds3<T>::BoundingSphere(Point3<T> &center, fp_t &radius) const {
     radius = Inside(center, *this) ? Distance(center, pMax) : static_cast<fp_t>(0);
 }
 
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+bool Bounds3<T>::IntersectP(const Ray_arg ray, fp_t *out_hit0 /*=nullptr*/, fp_t *out_hit1 /*=nullptr*/) const
+{
+    fp_t t0 = 0, t1 = ray.tMax;
 
+    for (int i = 0; i < 3; ++i) {
+        // Update interval for i_th bounding box slab
+        const fp_t invRayDir = 1 / ray.direction[i];
+        fp_t tNear = (pMin[i] - ray.origin[i]) * invRayDir;
+        fp_t tFar = (pMax[i] - ray.origin[i]) * invRayDir;
+
+        if(tNear > tFar)
+            std::swap(tNear, tFar);
+
+        // NOTE: Float rounding error correctnes, should be a way to turn on/off this via #define
+        tFar *= 1 + 2 * gamma(3);
+
+        if(tNear > t0) t0 = tNear;
+        if(tFar < t1) t1 = tFar;
+
+        if(t0 > t1)
+            return false;
+    }
+    if (out_hit0 != nullptr)
+        *out_hit0 = t0;
+    if (out_hit1 != nullptr)
+        *out_hit1 = t1;
+
+    return true;
+}
+
+// NOTE: WTF is this style, what is this dirIsNeg
+// NOTE: Book claims 15% performance improvement with this method over it's overloaded brother.
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+bool Bounds3<T>::IntersectP(const Ray_arg ray, const Vector3_arg<T> invDir, const i32 dirIsNeg[3]) const
+{
+    // NOTE: Why in the book is bounds of type Bounds3f and not Bounds3<T>, may be there is no reason Bounds3 should be templated at all.
+    const Bounds3<T> &bounds = *this;
+    // Check for ray intersection against 'x' and 'y'  slabs
+    fp_t tMin = (bounds[dirIsNeg[0]].x - ray.origin.x) * invDir.x;
+    fp_t tMax = (bounds[1 - dirIsNeg[0]].x - ray.origin.x) * invDir.x;
+
+    fp_t tyMin = (bounds[dirIsNeg[1]].y - ray.origin.y) * invDir.y;
+    fp_t tyMax = (bounds[1 - dirIsNeg[1]].y - ray.origin.y) * invDir.y;
+
+    // NOTE: Float rounding error correctnes, should be a way to turn on/off this via #define
+    tMax *= 1 + 2 * gamma(3);
+    tyMax *= 1 + 2 * gamma(3);
+
+    if(tMin > tyMax || tyMin > tMax)
+        return false;
+    if(tyMin > tMin) tMin = tyMin;
+    if(tyMax < tMax) tMax = tyMax;
+
+    fp_t tzMin = (bounds[dirIsNeg[2]].z - ray.origin.z) * invDir.z;
+    fp_t tzMax = (bounds[1 - dirIsNeg[2]].z - ray.origin.z) * invDir.z;
+    tzMax *= 1 + 2 * gamma(3);
+
+    if(tMin > tzMax || tzMin > tMax)
+        return false;
+    if(tzMin > tMin) tMin = tzMin;
+    if(tzMax < tMax) tMax = tzMax;
+
+    return (tMin < ray.tMax) && (tMax > 0);
+}
+
+
+// NOTE: Next 3 functions assign pMin and pMax directly instead of using constructor,
+//       because it's shit, but i don't know what can i do with it. And as stated in pbrt implementation
+//       this in turn, breaks returning an invalid bound for the case where we Intersect() non-overlapping bounds.
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 Bounds3<T> Union(const Bounds3_arg<T> b, const Point3_arg<T> p)
 {

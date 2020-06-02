@@ -196,11 +196,11 @@ struct Transform
 
     // TODO: operator() is templated in the original for some reason that needs to be figured out
     PBR_CNSTEXPR PBR_INLINE Point3_t operator()(const Point3_arg<fp_t> p) const;
-    PBR_CNSTEXPR PBR_INLINE Vector3_t operator()(const Vector3_arg<fp_t> p) const;
-    PBR_CNSTEXPR PBR_INLINE Normal3_t operator()(const Normal3_arg<fp_t> p) const;
+    PBR_CNSTEXPR PBR_INLINE Vector3_t operator()(const Vector3_arg<fp_t> v) const;
+    PBR_CNSTEXPR PBR_INLINE Normal3_t operator()(const Normal3_arg<fp_t> n) const;
     //PBR_CNSTEXPR PBR_INLINE Ray operator()(const Ray_arg r) const;
     //PBR_CNSTEXPR PBR_INLINE RayDifferential operator()(const RayDifferential_arg r) const;
-    //PBR_CNSTEXPR PBR_INLINE Bounds3_t operator()(const Bounds3_arg<fp_t> &b) const;
+    //PBR_CNSTEXPR PBR_INLINE Bounds3_t operator()(const Bounds3_arg<fp_t> b) const;
 
 // NOTE: marked as private in the original implementation
     Matrix4x4 m;

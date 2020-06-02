@@ -16,7 +16,23 @@ Shape::Shape(const Transform *ObjectToWorld, const Transform *WorldToObject,
     , reverseOrientation(reverseOrientation)
     , transformSwapsHandedness(ObjectToWorld->SwapsHandedness())
 {
-    ++stats_ShapesCreated;
+    PBR_STATS_COUNTER_INCREMENT(stats_ShapesCreated)
 }
+
+
+// ---------------------------------------
+// --------------- METHODS ---------------
+// ---------------------------------------
+
+Bounds3_t Shape::WorldBound() const
+{
+    return (*ObjectToWorld)(ObjectBound());
+}
+
+bool Shape::IntersectP(const Ray_arg ray, bool testAlphaTexture = true) const
+{
+    return Intersect(ray, nullptr, nullptr, testAlphaTexture);
+}
+
 
 } // namespace pbr

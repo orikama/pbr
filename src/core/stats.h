@@ -55,7 +55,7 @@ private:
     static std::vector<std::function<void(StatsAccumulator &)>> *m_callbacks;
 };
 
-
+#define PBR_STATS_COUNTER_INCREMENT(variable) (++variable);
 // TODO: Why variable=0 is necessary ?
 #define PBR_STATS_COUNTER(title, variable)                                          \
     static thread_local i64 variable;                                               \
@@ -65,6 +65,11 @@ private:
         variable = 0;                                                               \
     }                                                                               \
     static StatsRegisterer _PBR_STATS_REG_##variable(_PBR_STATS_FUNC_##variable);   \
+
+#else
+
+#define PBR_STATS_COUNTER_INCREMENT(variable)
+#define PBR_STATS_COUNTER(title, variable)
 
 #endif // PBR_ENABLE_STATS_COUNT
 
