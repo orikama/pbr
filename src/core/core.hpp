@@ -1,6 +1,8 @@
 #pragma once
 
 
+#define PBR_EFLOAT_DEBUG 1
+
 #define PBR_ENABLE_STATS_COUNT 1
 
 
@@ -37,9 +39,11 @@ using fp_t = f32;
         } }
 #else
     #define PBR_ASSERT(EXPRESSION)
+    #define PBR_ASSERT_MSG(EXPRESSION, MESSAGE)
 #endif
 
 
 namespace pbr::constants {
     inline constexpr fp_t infinity = std::numeric_limits<fp_t>::infinity();
+    inline constexpr fp_t machineEpsilon = fp_t(0.5) * std::numeric_limits<fp_t>::epsilon();
 } // namespace pbr::constants
