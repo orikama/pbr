@@ -16,11 +16,12 @@ class EFloat
 public:
     EFloat() = default;
     // NOTE: What's the use of error argument, why do we need it ?
-    EFloat(f32 value, f32 error = 0.f);
+    explicit EFloat(f32 value, f32 error = 0.f);
 #if PBR_EFLOAT_DEBUG == 1
-    EFloat(f32 value, f32 error, f64 precise);
+    explicit EFloat(f32 value, f32 error, f64 precise);
 #endif
 
+    friend bool operator==(EFloat ef1, EFloat ef2);
 
     friend EFloat operator-(EFloat ef);
 
@@ -33,8 +34,9 @@ public:
 
 
     f32 GetAbsoluteError() const {return error; }
-    f32 UpperBound() const { return NextFloatUp(value + error); }
-    f32 LowerBound() const { return NextFloatDown(value - error); }
+    // DIFFERENCE: I'm lazy, and I don't know if there is the difference between std and book implementation.
+    f32 UpperBound() const { return std::nexttowardf(value + error, std::numeric_limits<f64>::infinity()); }
+    f32 LowerBound() const { return std::nexttowardf(value - error, -std::numeric_limits<f64>::infinity()); }
 
 #if PBR_EFLOAT_DEBUG == 1
     f64 GetPreciseValue() const;
@@ -43,7 +45,7 @@ public:
 
     friend EFloat Sqrt(EFloat ef);
     friend EFloat Abs(EFloat ef);
-    friend bool Quadratic(EFloat a, EFloat b, EFloat c, EFloat x0, EFloat x1);
+    friend bool Quadratic(EFloat a, EFloat b, EFloat c, EFloat &x0, EFloat &x1);
 
 
 private:
@@ -81,6 +83,16 @@ EFloat::EFloat(f32 value, f32 error, f64 precise)
     CheckCorrectness();
 }
 #endif
+
+
+// ---------------------------------------
+// -------- COMPARISON OPERATORS ---------
+// ---------------------------------------
+
+bool operator==(EFloat ef1, EFloat ef2)
+{
+    return ef1.value == ef2.value && ef1.error == ef2.error;
+}
 
 
 // ---------------------------------------
@@ -194,6 +206,7 @@ void EFloat::CheckCorrectness() const
 // ---------- UTILITY FUNCTIONS ----------
 // ---------------------------------------
 
+// NOTE: std::sqrt should be good enough
 EFloat Sqrt(EFloat ef)
 {
     return EFloat(pbr::Sqrt(ef.value),
@@ -214,10 +227,29 @@ EFloat Abs(EFloat ef)
                  );
 }
 
-bool Quadratic(EFloat a, EFloat b, EFloat c, EFloat x0, EFloat x1)
+// DIFFERENCE: Discriminant was double
+bool Quadratic(EFloat a, EFloat b, EFloat c, EFloat &x0, EFloat &x1)
 {
+    fp_t discriminant = b.value * b.value - 4.f * a.value * c.value;
+    if(discriminant < 0.f)
+        return false;
 
+    fp_t rootD = pbr::Sqrt(discriminant);
+    EFloat efD(rootD, constants::machineEpsilon * rootD);
+
+    EFloat q;
+    if(b.value < 0.f)
+        q = -.5f * (b - efD);
+    else
+        q = -.5f * (b + efD);
+
+    x0 = q / a;
+    x1 = c / q;
+    // NOTE: Why ?
+    if(x0.value > x1.value)
+        std::swap(x0, x1);
+
+    return true;
 }
-
 
 } // namespace pbr
