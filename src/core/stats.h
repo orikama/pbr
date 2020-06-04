@@ -73,4 +73,32 @@ private:
 
 #endif // PBR_ENABLE_STATS_COUNT
 
+
+#if PBR_ENABLE_PROFILING == 1
+
+// NOTE: Keep the same order as in the book.
+enum class ProfileCategory
+{
+    ShapeIntersect
+}
+
+class ProfilePhase
+{
+public:
+    ProfilePhase(ProfileCategory pc)
+    {
+        m_categoryBit = 
+    }
+
+private:
+    ui64 m_categoryBit;
+    bool m_reset;
+};
+
+#define PBR_PROFILE_FUNCTION(category)
+
+#else
+
+#endif // PBR_ENABLE_PROFILING
+
 } // namespace pbr

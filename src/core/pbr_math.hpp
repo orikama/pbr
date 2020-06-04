@@ -54,6 +54,17 @@ T Cos(const T v)
        return std::cos(v);
 }
 
+template<typename T> inline
+T ACos(const T v)
+{
+   static_assert(std::numeric_limits<T>::is_iec559);
+
+   if constexpr (std::is_same<T, float>())
+       return std::acosf(v);
+   else
+       return std::acos(v);
+}
+
 //template<typename T>
 //inline T tan(const T v)
 //{

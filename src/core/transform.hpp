@@ -195,6 +195,8 @@ struct Transform
     PBR_CNSTEXPR bool SwapsHandedness() const;
 
     // TODO: operator() is templated in the original for some reason that needs to be figured out
+    // TODO: There is a bunch of Transform() methods that not mentioned in the book, which takes additional arguments for error correctness.
+    //       Therefore i should remove this error correctness from simple implementation of this methods.
     PBR_CNSTEXPR PBR_INLINE Point3_t operator()(const Point3_arg<fp_t> p) const;
     PBR_CNSTEXPR PBR_INLINE Vector3_t operator()(const Vector3_arg<fp_t> v) const;
     PBR_CNSTEXPR PBR_INLINE Normal3_t operator()(const Normal3_arg<fp_t> n) const;

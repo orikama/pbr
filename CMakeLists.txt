@@ -7,22 +7,26 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 set(pbr_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
-set(pbr_lib_SOURCES ${pbr_SRC_DIR}/core/core.hpp
-                    ${pbr_SRC_DIR}/core/pbr_math.hpp
-                    ${pbr_SRC_DIR}/core/pbr_concepts.hpp
-                    ${pbr_SRC_DIR}/core/geometry.hpp
-                    ${pbr_SRC_DIR}/core/geometry.cpp
-                    ${pbr_SRC_DIR}/core/transform.hpp
-                    ${pbr_SRC_DIR}/core/interaction.hpp
-                    ${pbr_SRC_DIR}/core/shape.h
-                    ${pbr_SRC_DIR}/core/shape.cpp
-                    ${pbr_SRC_DIR}/core/stats.h
-                    ${pbr_SRC_DIR}/core/stats.cpp)
+set(pbr_SRC_CORE_DIR "${pbr_SRC_DIR}/core")
+set(pbr_lib_CORE_SOURCES ${pbr_SRC_CORE_DIR}/core.hpp
+                         ${pbr_SRC_CORE_DIR}/pbr_math.hpp
+                         ${pbr_SRC_CORE_DIR}/pbr_concepts.hpp
+                         ${pbr_SRC_CORE_DIR}/geometry.hpp
+                         ${pbr_SRC_CORE_DIR}/geometry.cpp
+                         ${pbr_SRC_CORE_DIR}/transform.hpp
+                         ${pbr_SRC_CORE_DIR}/interaction.hpp
+                         ${pbr_SRC_CORE_DIR}/shape.h
+                         ${pbr_SRC_CORE_DIR}/shape.cpp
+                         ${pbr_SRC_CORE_DIR}/stats.h
+                         ${pbr_SRC_CORE_DIR}/stats.cpp)
+
+set(pbr_SRC_SHAPES_DIR "${pbr_SRC_DIR}/shapes")
+set(pbr_lib_SHAPES_SOURCES ${pbr_SRC_SHAPES_DIR}/sphere.hpp)
 
 
-add_library(pbr_lib STATIC ${pbr_lib_SOURCES})
+add_library(pbr_lib STATIC ${pbr_lib_CORE_SOURCES} ${pbr_lib_SHAPES_SOURCES})
 set_target_properties(pbr_lib PROPERTIES LINKER_LANGUAGE CXX)
-target_include_directories(pbr_lib INTERFACE ${pbr_SRC_DIR})
+target_include_directories(pbr_lib INTERFACE ${pbr_SRC_CORE_DIR} ${pbr_SRC_SHAPES_DIR})
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   target_compile_options(pbr_lib PUBLIC "-std=c++20")
