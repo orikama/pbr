@@ -76,14 +76,14 @@ template<typename T> PBR_CNSTEXPR
 Vector2<T>::Vector2(T value)
     : x(value), y(value)
 {
-    PBR_ASSERT(!HasNaNs());
+    PBR_ASSERT(!HasNaNs())
 }
 
 template<typename T> PBR_CNSTEXPR
 Vector2<T>::Vector2(T x, T y)
     : x(x), y(y)
 {
-    PBR_ASSERT(!HasNaNs());
+    PBR_ASSERT(!HasNaNs())
 }
 
 
@@ -95,7 +95,7 @@ Vector2<T>::Vector2(T x, T y)
     template<typename T> PBR_CNSTEXPR PBR_INLINE \
     Vector2<T>& Vector2<T>::operator op(const Vector2_arg v) \
     { \
-        PBR_ASSERT(!v.HasNaNs()); \
+        PBR_ASSERT(!v.HasNaNs()) \
         x op v.x; \
         y op v.y; \
         return *this; \
@@ -119,7 +119,7 @@ COMPOUND_OPERATOR_S(*=)
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 Vector2<T>& Vector2<T>::operator/=(const T scalar)
 {
-    PBR_ASSERT(scalar != 0);
+    PBR_ASSERT(scalar != 0)
 
     if constexpr (std::numeric_limits<T>::is_iec559) {
         T inv = static_cast<T>(1) / scalar;
@@ -151,7 +151,7 @@ Vector2<T> operator-(const Vector2_arg<T> v)
 #define BINARY_OPERATOR_VV(op) \
     template<typename T> PBR_CNSTEXPR PBR_INLINE \
     Vector2<T> operator op(const Vector2_arg<T> v1, const Vector2_arg<T> v2) { \
-        PBR_ASSERT(!v2.HasNaNs()); \
+        PBR_ASSERT(!v2.HasNaNs()) \
         return Vector2<T>(v1.x op v2.x, v1.y op v2.y); \
     }
 
@@ -170,7 +170,7 @@ BINARY_OPERATOR_VS(*)
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 Vector2<T> operator/(const Vector2_arg<T> v, const T scalar)
 {
-    PBR_ASSERT(scalar != 0);
+    PBR_ASSERT(scalar != 0)
 
     if constexpr (std::numeric_limits<T>::is_iec559) {
         T inv = static_cast<T>(1) / scalar;
@@ -234,14 +234,14 @@ Vector2<T> Abs(const Vector2_arg<T> v)
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 T Dot(const Vector2_arg<T> v1, const Vector2_arg<T> v2)
 {
-    PBR_ASSERT(!v1.HasNaNs() && !v2.HasNaNs());
+    PBR_ASSERT(!v1.HasNaNs() && !v2.HasNaNs())
     return v1.x * v2.x + v1.y * v2.y;
 }
 
 template<typename T> PBR_INLINE
 T AbsDot(const Vector2_arg<T> v1, const Vector2_arg<T> v2)
 {
-    PBR_ASSERT(!v1.HasNaNs() && !v2.HasNaNs());
+    PBR_ASSERT(!v1.HasNaNs() && !v2.HasNaNs())
     return std::abs(Dot(v1, v2));
 }
 
@@ -275,14 +275,14 @@ struct Vector3
 
     /*T operator[](i32 i) const
     {
-        PBR_ASSERT(i >= 0 && i <= 2);
+        PBR_ASSERT(i >= 0 && i <= 2)
         if (i == 0) return x;
         if (i == 1) return y;
         return z;
     }
     T& operator[](i32 i)
     {
-        PBR_ASSERT(i >= 0 && i <= 2);
+        PBR_ASSERT(i >= 0 && i <= 2)
         if (i == 0) return x;
         if (i == 1) return y;
         return z;
@@ -317,14 +317,14 @@ template<typename T> PBR_CNSTEXPR
 Vector3<T>::Vector3(T value)
     : x(value), y(value), z(value)
 {
-    PBR_ASSERT(!HasNaNs());
+    PBR_ASSERT(!HasNaNs())
 }
 
 template<typename T> PBR_CNSTEXPR
 Vector3<T>::Vector3(T x, T y, T z)
     : x(x), y(y), z(z)
 {
-    PBR_ASSERT(!HasNaNs());
+    PBR_ASSERT(!HasNaNs())
 }
 
 
@@ -336,7 +336,7 @@ Vector3<T>::Vector3(T x, T y, T z)
     template<typename T> PBR_CNSTEXPR PBR_INLINE \
     Vector3<T>& Vector3<T>::operator op(const Vector3_arg v) \
     { \
-        PBR_ASSERT(!v.HasNaNs()); \
+        PBR_ASSERT(!v.HasNaNs()) \
         x op v.x; \
         y op v.y; \
         z op v.z; \
@@ -361,7 +361,7 @@ COMPOUND_OPERATOR_S(*=)
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 Vector3<T>& Vector3<T>::operator/=(const T scalar)
 {
-    PBR_ASSERT(scalar != 0);
+    PBR_ASSERT(scalar != 0)
 
     if constexpr (std::numeric_limits<T>::is_iec559) {
         T inv = static_cast<T>(1) / scalar;
@@ -393,7 +393,7 @@ Vector3<T> operator-(const Vector3_arg<T> v)
 #define BINARY_OPERATOR_VV(op) \
     template<typename T> PBR_CNSTEXPR PBR_INLINE \
     Vector3<T> operator op(const Vector3_arg<T> v1, const Vector3_arg<T> v2) { \
-        PBR_ASSERT(!v2.HasNaNs()); \
+        PBR_ASSERT(!v2.HasNaNs()) \
         return Vector3<T>(v1.x op v2.x, v1.y op v2.y, v1.z op v2.z); \
     }
 
@@ -413,7 +413,7 @@ BINARY_OPERATOR_VS(*)
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 Vector3<T> operator/(const Vector3_arg<T> v, const T scalar)
 {
-    PBR_ASSERT(scalar != 0);
+    PBR_ASSERT(scalar != 0)
 
     if constexpr (std::numeric_limits<T>::is_iec559) {
         T inv = static_cast<T>(1) / scalar;
@@ -477,21 +477,21 @@ Vector3<T> Abs(const Vector3_arg<T> v)
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 T Dot(const Vector3_arg<T> v1, const Vector3_arg<T> v2)
 {
-    PBR_ASSERT(!v1.HasNaNs() && !v2.HasNaNs());
+    PBR_ASSERT(!v1.HasNaNs() && !v2.HasNaNs())
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
 template<typename T> PBR_INLINE
 T AbsDot(const Vector3_arg<T> v1, const Vector3_arg<T> v2)
 {
-    PBR_ASSERT(!v1.HasNaNs() && !v2.HasNaNs());
+    PBR_ASSERT(!v1.HasNaNs() && !v2.HasNaNs())
     return std::abs(Dot(v1, v2));
 }
 
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 Vector3<T> Cross(const Vector3_arg<T> v1, const Vector3_arg<T> v2)
 {
-    PBR_ASSERT(!n1.HasNaNs() && !n2.HasNaNs());
+    PBR_ASSERT(!n1.HasNaNs() && !n2.HasNaNs())
     if constexpr (std::is_same<T, f64>()) {
         return Vector3<T>(v1.y * v2.z - v1.z * v2.y,
                           v1.z * v2.x - v1.x * v2.z,
@@ -615,14 +615,14 @@ template<typename T> PBR_CNSTEXPR
 Point2<T>::Point2(T value)
     : x(value), y(value)
 {
-    PBR_ASSERT(!HasNaNs());
+    PBR_ASSERT(!HasNaNs())
 }
 
 template<typename T> PBR_CNSTEXPR
 Point2<T>::Point2(T x, T y)
     : x(x), y(y)
 {
-    PBR_ASSERT(!HasNaNs());
+    PBR_ASSERT(!HasNaNs())
 }
 
 
@@ -634,7 +634,7 @@ Point2<T>::Point2(T x, T y)
     template<typename T> PBR_CNSTEXPR PBR_INLINE \
     Point2<T>& Point2<T>::operator op(const Point2_arg p) \
     { \
-        PBR_ASSERT(!p.HasNaNs()); \
+        PBR_ASSERT(!p.HasNaNs()) \
         x op p.x; \
         y op p.y; \
         return *this; \
@@ -657,7 +657,7 @@ COMPOUND_OPERATOR_S(*=)
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 Point2<T>& Point2<T>::operator/=(const T scalar)
 {
-    PBR_ASSERT(scalar != 0);
+    PBR_ASSERT(scalar != 0)
 
     if constexpr (std::numeric_limits<T>::is_iec559) {
         T inv = static_cast<T>(1) / scalar;
@@ -689,7 +689,7 @@ Point2<T> operator-(const Point2_arg<T> p)
 #define BINARY_OPERATOR_PP(op) \
     template<typename T> PBR_CNSTEXPR PBR_INLINE \
     Point2<T> operator op(const Point2_arg<T> p1, const Point2_arg<T> p2) { \
-        PBR_ASSERT(!p2.HasNaNs()); \
+        PBR_ASSERT(!p2.HasNaNs()) \
         return Point2<T>(p1.x op p2.x, p1.y op p2.y); \
     }
 
@@ -707,7 +707,7 @@ BINARY_OPERATOR_PS(*)
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 Point2<T> operator/(const Point2_arg<T> p, const T scalar)
 {
-    PBR_ASSERT(scalar != 0);
+    PBR_ASSERT(scalar != 0)
 
     if constexpr (std::numeric_limits<T>::is_iec559) {
         T inv = static_cast<T>(1) / scalar;
@@ -788,14 +788,14 @@ template<typename T> PBR_CNSTEXPR
 Point3<T>::Point3(T value)
     : x(value), y(value), z(value)
 {
-    PBR_ASSERT(!HasNaNs());
+    PBR_ASSERT(!HasNaNs())
 }
 
 template<typename T> PBR_CNSTEXPR
 Point3<T>::Point3(T x, T y, T z)
     : x(x), y(y), z(z)
 {
-    PBR_ASSERT(!HasNaNs());
+    PBR_ASSERT(!HasNaNs())
 }
 
 
@@ -831,7 +831,7 @@ COMPOUND_OPERATOR_S(*=)
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 Point3<T>& Point3<T>::operator/=(const T scalar)
 {
-    PBR_ASSERT(scalar != 0);
+    PBR_ASSERT(scalar != 0)
 
     if constexpr (std::numeric_limits<T>::is_iec559) {
         T inv = static_cast<T>(1) / scalar;
@@ -863,7 +863,7 @@ Point3<T> operator-(const Point3_arg<T> p)
 #define BINARY_OPERATOR_PP(op) \
     template<typename T> PBR_CNSTEXPR PBR_INLINE \
     Point3<T> operator op(const Point3_arg<T> p1, const Point3_arg<T> p2) { \
-        PBR_ASSERT(!p2.HasNaNs()); \
+        PBR_ASSERT(!p2.HasNaNs()) \
         return Point3<T>(p1.x op p2.x, p1.y op p2.y, p1.z op p2.z); \
     }
 
@@ -871,7 +871,7 @@ BINARY_OPERATOR_PP(+)
 
 template<typename T> PBR_CNSTEXPR PBR_INLINE \
 Vector3<T> operator-(const Point3_arg<T> p1, const Point3_arg<T> p2) { \
-    PBR_ASSERT(!p2.HasNaNs()); \
+    PBR_ASSERT(!p2.HasNaNs()) \
     return Vector3<T>(p1.x - p2.x, p1.y - p2.y, p1.z - p2.z); \
 }
 
@@ -887,7 +887,7 @@ BINARY_OPERATOR_PS(*)
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 Point3<T>& operator/(const Point3_arg<T> p, const T scalar)
 {
-    PBR_ASSERT(scalar != 0);
+    PBR_ASSERT(scalar != 0)
 
     if constexpr (std::numeric_limits<T>::is_iec559) {
         T inv = static_cast<T>(1) / scalar;
@@ -1035,14 +1035,14 @@ template<typename T> PBR_CNSTEXPR
 Normal3<T>::Normal3(T value)
     : x(value), y(value), z(value)
 {
-    PBR_ASSERT(!HasNaNs());
+    PBR_ASSERT(!HasNaNs())
 }
 
 template<typename T> PBR_CNSTEXPR
 Normal3<T>::Normal3(T x, T y, T z)
     : x(x), y(y), z(z)
 {
-    PBR_ASSERT(!HasNaNs());
+    PBR_ASSERT(!HasNaNs())
 }
 
 
@@ -1054,7 +1054,7 @@ Normal3<T>::Normal3(T x, T y, T z)
     template<typename T> PBR_CNSTEXPR PBR_INLINE \
     Normal3<T>& Normal3<T>::operator op(const Normal3_arg n) \
     { \
-        PBR_ASSERT(!n.HasNaNs()); \
+        PBR_ASSERT(!n.HasNaNs()) \
         x op n.x; \
         y op n.y; \
         z op n.z; \
@@ -1080,7 +1080,7 @@ COMPOUND_OPERATOR_S(*=)
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 Normal3<T>& Normal3<T>::operator/=(const T scalar)
 {
-    PBR_ASSERT(scalar != 0);
+    PBR_ASSERT(scalar != 0)
 
     if constexpr (std::numeric_limits<T>::is_iec559) {
         T inv = static_cast<T>(1) / scalar;
@@ -1112,7 +1112,7 @@ Normal3<T> operator-(const Normal3_arg<T> n)
 #define BINARY_OPERATOR_NN(op) \
     template<typename T> PBR_CNSTEXPR PBR_INLINE \
     Normal3<T> operator op(const Normal3_arg<T> n1, const Normal3_arg<T> n2) { \
-        PBR_ASSERT(!n2.HasNaNs()); \
+        PBR_ASSERT(!n2.HasNaNs()) \
         return Normal3<T>(n1.x op n2.x, n1.y op n2.y, n1.z op n2.z); \
     }
 
@@ -1134,7 +1134,7 @@ BINARY_OPERATOR_NN(*)
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 Vector3<T> operator/(const Normal3_arg<T> n, const T scalar)
 {
-    PBR_ASSERT(scalar != 0);
+    PBR_ASSERT(scalar != 0)
 
     if constexpr (std::numeric_limits<T>::is_iec559) {
         T inv = static_cast<T>(1) / scalar;
@@ -1200,21 +1200,21 @@ T Abs(const Normal3_arg<T> p)
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 T Dot(const Normal3_arg<T> n1, const Normal3_arg<T> n2)
 {
-    PBR_ASSERT(!n1.HasNaNs() && !n2.HasNaNs());
+    PBR_ASSERT(!n1.HasNaNs() && !n2.HasNaNs())
     return n1.x * n2.x + n1.y * n2.y + n1.z * n2.z;
 }
 
 template<typename T> PBR_INLINE
 T AbsDot(const Normal3_arg<T> n1, const Normal3_arg<T> n2)
 {
-    PBR_ASSERT(!n1.HasNaNs() && !n2.HasNaNs());
+    PBR_ASSERT(!n1.HasNaNs() && !n2.HasNaNs())
     return std::abs(Dot(n1, n2));
 }
 
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 Normal3<T> Cross(const Normal3_arg<T> n1, const Normal3_arg<T> n2)
 {
-    PBR_ASSERT(!n1.HasNaNs() && !n2.HasNaNs());
+    PBR_ASSERT(!n1.HasNaNs() && !n2.HasNaNs())
     if constexpr (std::is_same<T, f64>()) {
         return Normal3<T>(n1.y * n2.z - n1.z * n2.y,
                           n1.z * n2.x - n1.x * n2.z,
@@ -1496,7 +1496,7 @@ T Bounds3<T>::Volume() const
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 Point3<T> Bounds3<T>::Corner(const i32 corner) const
 {
-    PBR_ASSERT(corner >= 0 && corner < 8);
+    PBR_ASSERT(corner >= 0 && corner < 8)
 
     T x,y,z;
     x = (corner & 1 == 0) ? pMin.x : pMax.x;

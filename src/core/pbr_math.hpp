@@ -131,5 +131,11 @@ Float Lerp(const Float t, const Float f1, const Float f2)
     return f1 - t * (f2 - f1);
 }
 
+constexpr inline
+fp_t Gamma(i32 n)
+{
+    return (n * constants::machineEpsilon) / ( 1 - n * constants::machineEpsilon);
+}
+
 
 } // namespace pbr

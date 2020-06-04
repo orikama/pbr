@@ -81,14 +81,14 @@ Matrix4x4::Matrix4x4(fp_t t00, fp_t t01, fp_t t02, fp_t t03,
 PBR_CNSTEXPR PBR_INLINE
 fp_t* Matrix4x4::operator[](const i32 i)
 {
-    PBR_ASSERT(i >= 0 && i <= 15);
+    PBR_ASSERT(i >= 0 && i <= 15)
     return this->m[i];
 }
 
 PBR_CNSTEXPR PBR_INLINE
 const fp_t* Matrix4x4::operator[](const i32 i) const
 {
-    PBR_ASSERT(i >= 0 && i <= 15);
+    PBR_ASSERT(i >= 0 && i <= 15)
     return this->m[i];
 }
 
@@ -439,7 +439,7 @@ Transform LookAt(const Point3_arg<fp_t> pos, const Point3_arg<fp_t> look, const 
     const auto newUp = Cross(direction, right);
 
     PBR_ASSERT_MSG(Cross(Normalize(up), direction).Length() == 0,
-        "up vector and viewing direction passed to LookAt are pointing in the same direction");
+        "up vector and viewing direction passed to LookAt are pointing in the same direction")
 
     Matrix4x4 cameraToWorld(right.x, newUp.x, direction.x, pox.x,
                             right.y, newUp.y, direction.y, pos.y,

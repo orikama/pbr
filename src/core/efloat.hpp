@@ -2,7 +2,6 @@
 
 #include "core.hpp"
 #include "pbr_math.hpp"
-#include <cmath>
 
 
 // TODO: This class got big improvement, compare to book version.
