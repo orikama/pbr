@@ -38,8 +38,8 @@ public:
     f32 LowerBound() const { return std::nexttowardf(value - error, -std::numeric_limits<f64>::infinity()); }
 
 #if PBR_EFLOAT_DEBUG == 1
-    f64 GetPreciseValue() const;
-    f32 GetRelativeError() const;
+    f64 GetPreciseValue() const { return precise; }
+    f32 GetRelativeError() const { return std::abs((precise - value) / precise); }
 #endif
 
     friend EFloat Sqrt(EFloat ef);
