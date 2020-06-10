@@ -20,7 +20,7 @@ bool isNaN(const T x)
 }
 
 
-namespace pbr {
+PBR_NAMESPACE_BEGIN
 
 // ******************************************************************************
 // ---------------------------------- VECTOR2 -----------------------------------
@@ -255,6 +255,9 @@ T AbsDot(const Vector2_arg<T> v1, const Vector2_arg<T> v2)
 
 #pragma region Vector3
 
+template<typename T> class Point3; // NOTE: Forward declaration for Vector3(Point3_arg<T> p) conversion constructor
+template<typename T> using Point3_arg = Point3<T>&;
+
 template<typename T>
 struct Vector3
 {
@@ -263,6 +266,8 @@ struct Vector3
     PBR_CNSTEXPR Vector3();
     PBR_CNSTEXPR explicit Vector3(T value);
     PBR_CNSTEXPR explicit Vector3(T x, T y, T z);
+
+    PBR_CNSTEXPR explicit Vector3(Point3_arg<T> p); // Conversion constructor
 
 
     PBR_CNSTEXPR PBR_INLINE Vector3<T>& operator+=(const Vector3_arg v);
@@ -323,6 +328,13 @@ Vector3<T>::Vector3(T value)
 template<typename T> PBR_CNSTEXPR
 Vector3<T>::Vector3(T x, T y, T z)
     : x(x), y(y), z(z)
+{
+    PBR_ASSERT(!HasNaNs())
+}
+
+template<typename T> PBR_CNSTEXPR
+Vector3<T>::Vector3(Point3_arg<T> p)
+    : x(p.x), y(p.y), z(p.z)
 {
     PBR_ASSERT(!HasNaNs())
 }
@@ -753,6 +765,8 @@ struct Point3
     PBR_CNSTEXPR explicit Point3(T value);
     PBR_CNSTEXPR explicit Point3(T x, T y, T z);
 
+    PBR_CNSTEXPR explicit Point3(const Vector3_arg<T> v); // Conversion constructor
+
 
     PBR_CNSTEXPR PBR_INLINE Point3<T>& operator+=(const Point3_arg p);
 
@@ -773,7 +787,8 @@ struct Point3
 };
 
 using Point3_t = Point3<fp_t>;
-template<typename T> using Point3_arg = Point3<T>&;
+// NOTE: Declared before Vector3, cause of fockin conversion constructor
+//template<typename T> using Point3_arg = Point3<T>&;
 
 
 // ---------------------------------------
@@ -798,6 +813,12 @@ Point3<T>::Point3(T x, T y, T z)
     PBR_ASSERT(!HasNaNs())
 }
 
+template<typename T> PBR_CNSTEXPR
+Point3<T>::Point3(const Vector3_arg<T> v)
+    : x(v.x), y(v.y), z(v.z)
+{
+    PBR_ASSERT(!HasNaNs())
+}
 
 // ---------------------------------------
 // ---- COMPOUND ARITHMETIC OPERATORS ----
@@ -996,6 +1017,8 @@ struct Normal3
     PBR_CNSTEXPR explicit Normal3(T value);
     PBR_CNSTEXPR explicit Normal3(T x, T y, T z);
 
+    PBR_CNSTEXPR explicit Normal3(const Vector3_arg<T> v); // Conversion constructor
+
 
     PBR_CNSTEXPR PBR_INLINE T LengthSquared() const;
     PBR_INLINE T Length() const;
@@ -1041,6 +1064,13 @@ Normal3<T>::Normal3(T value)
 template<typename T> PBR_CNSTEXPR
 Normal3<T>::Normal3(T x, T y, T z)
     : x(x), y(y), z(z)
+{
+    PBR_ASSERT(!HasNaNs())
+}
+
+template<typename T> PBR_CNSTEXPR
+Normal3<T>::Normal3(const Vector3_arg<T> v)
+    : x(v.x), y(v.y), z(v.z)
 {
     PBR_ASSERT(!HasNaNs())
 }
@@ -1260,25 +1290,24 @@ Normal3<T> FaceForward(const Normal3_arg<T> n1, const Normal3_arg<T> n2)
 
 #pragma region Ray
 
-// TODO: Medium not implemented
+// TODO: Medium not implemented.
 struct Ray
 {
-    //using Vector3_arg = Vector3<T>&;
-
     PBR_CNSTEXPR Ray();
     PBR_CNSTEXPR explicit Ray(const Point3_arg<fp_t> origin,
                               const Vector3_arg<fp_t> direction,
                               fp_t tMax = constants::infinity,
-                              fp_t time = static_cast<fp_t>(0));
+                              fp_t time = static_cast<fp_t>(0)
+                              /*const Medium *medium = nullptr*/);
 
 
-    //PBR_CNSTEXPR Point3_t operator()(fp_t t) const;
+    PBR_CNSTEXPR PBR_INLINE Point3_t operator()(fp_t t) const;
 
 
     Point3_t origin;
     Vector3_t direction;
     //const Medium *medium;
-    fp_t tMax;
+    fp_t tMax; // DIFFERENCE: Marked as mutable.
     fp_t time;
 };
 
@@ -1293,17 +1322,20 @@ PBR_CNSTEXPR
 Ray::Ray()
     : tMax(constants::infinity)
     , time(static_cast<fp_t>(0))
+    //, medium(nullptr)
 {}
 
 PBR_CNSTEXPR
 Ray::Ray(const Point3_arg<fp_t> origin,
          const Vector3_arg<fp_t> direction,
          fp_t tMax, /* = constants::infinity */
-         fp_t time /* = static_cast<fp_t>(0)) */)
+         fp_t time /* = static_cast<fp_t>(0)) */
+         /* const Medium *medium /* = nullptr */)
     : origin(origin)
     , direction(direction)
     , tMax(tMax)
     , time(time)
+    //, medium(medium)
 {}
 
 
@@ -1311,11 +1343,11 @@ Ray::Ray(const Point3_arg<fp_t> origin,
 // ------- FUNCTION CALL OPERATORS -------
 // ---------------------------------------
 
-//PBR_CNSTEXPR
-//Point3_t Ray::operator()(fp_t t) const
-//{
-//    return origin + (direction * t);
-//}
+PBR_CNSTEXPR PBR_INLINE
+Point3_t Ray::operator()(fp_t t) const
+{
+    return origin + direction * t;
+}
 
 #pragma endregion Ray
 
@@ -1543,6 +1575,7 @@ void Bounds3<T>::BoundingSphere(Point3<T> &center, fp_t &radius) const {
     radius = Inside(center, *this) ? Distance(center, pMax) : static_cast<fp_t>(0);
 }
 
+// TODO: Should be used with references instead of pointers.
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 bool Bounds3<T>::IntersectP(const Ray_arg ray, fp_t *out_hit0 /*=nullptr*/, fp_t *out_hit1 /*=nullptr*/) const
 {
@@ -1554,11 +1587,12 @@ bool Bounds3<T>::IntersectP(const Ray_arg ray, fp_t *out_hit0 /*=nullptr*/, fp_t
         fp_t tNear = (pMin[i] - ray.origin[i]) * invRayDir;
         fp_t tFar = (pMax[i] - ray.origin[i]) * invRayDir;
 
-        if(tNear > tFar)
-            std::swap(tNear, tFar);
+        if(tNear > tFar) std::swap(tNear, tFar);
 
-        // NOTE: Float rounding error correctnes, should be a way to turn on/off this via #define
-        tFar *= 1 + 2 * gamma(3);
+// NOTE: Chapter 3.9.2
+#if PBR_ENABLE_EFLOAT == 1
+        tFar *= 1 + 2 * Gamma(3);
+#endif
 
         if(tNear > t0) t0 = tNear;
         if(tFar < t1) t1 = tFar;
@@ -1566,10 +1600,9 @@ bool Bounds3<T>::IntersectP(const Ray_arg ray, fp_t *out_hit0 /*=nullptr*/, fp_t
         if(t0 > t1)
             return false;
     }
-    if (out_hit0 != nullptr)
-        *out_hit0 = t0;
-    if (out_hit1 != nullptr)
-        *out_hit1 = t1;
+
+    if (out_hit0 != nullptr) *out_hit0 = t0;
+    if (out_hit1 != nullptr) *out_hit1 = t1;
 
     return true;
 }
@@ -1581,16 +1614,18 @@ bool Bounds3<T>::IntersectP(const Ray_arg ray, const Vector3_arg<T> invDir, cons
 {
     // NOTE: Why in the book is bounds of type Bounds3f and not Bounds3<T>, may be there is no reason Bounds3 should be templated at all.
     const Bounds3<T> &bounds = *this;
-    // Check for ray intersection against 'x' and 'y'  slabs
+    // Check for ray intersection against 'x' and 'y' slabs
     fp_t tMin = (bounds[dirIsNeg[0]].x - ray.origin.x) * invDir.x;
     fp_t tMax = (bounds[1 - dirIsNeg[0]].x - ray.origin.x) * invDir.x;
 
     fp_t tyMin = (bounds[dirIsNeg[1]].y - ray.origin.y) * invDir.y;
     fp_t tyMax = (bounds[1 - dirIsNeg[1]].y - ray.origin.y) * invDir.y;
 
-    // NOTE: Float rounding error correctnes, should be a way to turn on/off this via #define
-    tMax *= 1 + 2 * gamma(3);
-    tyMax *= 1 + 2 * gamma(3);
+// NOTE: Chapter 3.9.2
+#if PBR_ENABLE_EFLOAT == 1
+    tMax *= 1 + 2 * Gamma(3);
+    tyMax *= 1 + 2 * Gamma(3);
+#endif
 
     if(tMin > tyMax || tyMin > tMax)
         return false;
@@ -1599,7 +1634,9 @@ bool Bounds3<T>::IntersectP(const Ray_arg ray, const Vector3_arg<T> invDir, cons
 
     fp_t tzMin = (bounds[dirIsNeg[2]].z - ray.origin.z) * invDir.z;
     fp_t tzMax = (bounds[1 - dirIsNeg[2]].z - ray.origin.z) * invDir.z;
-    tzMax *= 1 + 2 * gamma(3);
+#if PBR_ENABLE_EFLOAT == 1
+    tzMax *= 1 + 2 * Gamma(3);
+#endif
 
     if(tMin > tzMax || tzMin > tMax)
         return false;
@@ -1678,7 +1715,7 @@ bool InsideExclusive(const Point3_arg<T> p, const Bounds3_arg<T> b)
 
 #pragma endregion Bounds3
 
-} // namespace pbr
+PBR_NAMESPACE_END
 
 #undef PBR_CNSTEXPR
 #undef PBR_INLINE

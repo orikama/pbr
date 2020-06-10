@@ -1,6 +1,6 @@
 #pragma once
 
-
+#define PBR_ENABLE_EFLOAT 1
 #define PBR_EFLOAT_DEBUG 1
 
 #define PBR_ENABLE_STATS_COUNT 1
@@ -10,9 +10,11 @@
 //#include "pbr_concepts.hpp"
 
 #include <limits>
+#include <numbers>
 #include <cstdint>
 
 using i32 = std::int32_t;
+using ui32 = std::uint32_t;
 using i64 = std::int64_t;
 using ui64 = std::uint64_t;
 using f32 = float;
@@ -45,7 +47,11 @@ using fp_t = f32;
 #endif
 
 
+#define PBR_NAMESPACE_BEGIN namespace pbr {
+#define PBR_NAMESPACE_END }
+
 namespace pbr::constants {
     inline constexpr fp_t infinity = std::numeric_limits<fp_t>::infinity();
+    inline constexpr fp_t pi_t = std::numbers::pi_v<fp_t>;
     inline constexpr fp_t machineEpsilon = fp_t(0.5) * std::numeric_limits<fp_t>::epsilon();
 } // namespace pbr::constants

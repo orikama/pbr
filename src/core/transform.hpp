@@ -4,12 +4,13 @@
 #include "pbr_math.hpp"
 
 #include "geometry.hpp"
+#include "interaction.hpp" // NOTE: There is foockin circluar dependency, that's why I need to split implementation.
 
 #define PBR_CNSTEXPR constexpr
 #define PBR_INLINE inline
 
 
-namespace pbr {
+PBR_NAMESPACE_BEGIN
 
 // ******************************************************************************
 // --------------------------------- Matrix4x4 ----------------------------------
@@ -35,7 +36,8 @@ struct Matrix4x4
     fp_t m[4][4];
 };
 
-// NOTE: I don't think there is a point of doing that, for an object of such a size
+// NOTE: I don't think there is a point of doing that, for an object of such a size.
+//       Although as I found out there is like 16 simd registers.
 using Matrix4x4_arg = Matrix4x4&;
 
 
@@ -194,15 +196,23 @@ struct Transform
 
     PBR_CNSTEXPR bool SwapsHandedness() const;
 
-    // TODO: operator() is templated in the original for some reason that needs to be figured out
+    // FINDOUT: operator() is templated in the original for some reason that needs to be figured out. And they all marked as inline.
     // TODO: There is a bunch of Transform() methods that not mentioned in the book, which takes additional arguments for error correctness.
-    //       Therefore i should remove this error correctness from simple implementation of this methods.
+    //       Therefore i should remove this error correctness from simple implementation of this methods. If possible.
     PBR_CNSTEXPR PBR_INLINE Point3_t operator()(const Point3_arg<fp_t> p) const;
+    PBR_CNSTEXPR PBR_INLINE Point3_t operator()(const Point3_arg<fp_t> p, Vector3_t &out_pError) const;
+    // TODO: Point3_t operator()(const Point3_arg<fp_t> p, const Vector3_arg<fp_t> pError, Vector3_t &out_absError)
     PBR_CNSTEXPR PBR_INLINE Vector3_t operator()(const Vector3_arg<fp_t> v) const;
+    // FINDOUT: Why arguments are different for Point3 and Vector3 transformations ?
+    // TODO: Vector3_t operator()(const Vector3_arg<fp_t> v, Vector3_t &out_absError)
+    //       Vector3_t operator()(const Vector3_arg<fp_t> v, const Vector3_arg<fp_t> vError, Vector3_t &out_absError)
     PBR_CNSTEXPR PBR_INLINE Normal3_t operator()(const Normal3_arg<fp_t> n) const;
-    //PBR_CNSTEXPR PBR_INLINE Ray operator()(const Ray_arg r) const;
+    PBR_CNSTEXPR PBR_INLINE Ray operator()(const Ray_arg r) const;
+    PBR_CNSTEXPR PBR_INLINE Ray operator()(const Ray_arg r, Vector3_t &out_oError, Vector3_t &out_dError) const;
+    // TODO: There is one more Ray transform function in the book.
     //PBR_CNSTEXPR PBR_INLINE RayDifferential operator()(const RayDifferential_arg r) const;
     //PBR_CNSTEXPR PBR_INLINE Bounds3_t operator()(const Bounds3_arg<fp_t> b) const;
+    PBR_CNSTEXPR PBR_INLINE SurfaceInteraction operator()(const SurfaceInteraction &si) const;
 
 // NOTE: marked as private in the original implementation
     Matrix4x4 m;
@@ -249,23 +259,49 @@ Transform operator*(const Transform &t1, const Transform &t2) {
 // ------- FUNCTION CALL OPERATORS -------
 // ---------------------------------------
 
-// TODO: As stated int the book most of the time wp will be equal to 1,
+// NOTE: As stated int the book most of the time wp will be equal to 1,
 //       only the projective transformation will require division
-// NOTE: I think m[3] row will be zero every time and only m[3][3] will be non zero,
-//       so it can can be optimized
+// FINDOUT: I think m[3] row will be zero every time and only m[3][3] will be non zero,
+//          so it can can be optimized
 PBR_CNSTEXPR PBR_INLINE
-Point3_t Transform::operator()(const Point3_arg<fp_t> p) const {
+Point3_t Transform::operator()(const Point3_arg<fp_t> p) const
+{
     const fp_t xp = m[0][0] * p.x + m[0][1] * p.y + m[0][2] * p.z + m[0][3];
     const fp_t yp = m[1][0] * p.x + m[1][1] * p.y + m[1][2] * p.z + m[1][3];
     const fp_t zp = m[2][0] * p.x + m[2][1] * p.y + m[2][2] * p.z + m[2][3];
     const fp_t wp = m[3][0] * p.x + m[3][1] * p.y + m[3][2] * p.z + m[3][3];
-    PBR_ASSERT(wp != 0);
+
+    PBR_ASSERT(wp != 0)
     if (wp == 1)
         return Point3_t(xp, yp, zp);
     else
-        // NOTE: Will be Point3_t(xp / wp, yp / wp, zp / wp); more effective ?
+        // FINDOUT: Will be Point3_t(xp / wp, yp / wp, zp / wp); more effective ?
         return Point3_t(xp, yp, zp) / wp;
 }
+
+PBR_CNSTEXPR PBR_INLINE
+Point3_t Transform::operator()(const Point3_arg<fp_t> p, Vector3_t &out_pError) const
+{
+    // NOTE: I don't know if this additional parentheses will change anything
+    //       https://github.com/mmp/pbrt-v3/issues/181
+    const fp_t xp = (m[0][0] * p.x + m[0][1] * p.y) + (m[0][2] * p.z + m[0][3]);
+    const fp_t yp = (m[1][0] * p.x + m[1][1] * p.y) + (m[1][2] * p.z + m[1][3]);
+    const fp_t zp = (m[2][0] * p.x + m[2][1] * p.y) + (m[2][2] * p.z + m[2][3]);
+    const fp_t wp = (m[3][0] * p.x + m[3][1] * p.y) + (m[3][2] * p.z + m[3][3]);
+
+    const fp_t xAbsSum = std::abs(m[0][0] * p.x) + std::abs(m[0][1] * p.y) + std::abs(m[0][2] * p.z) + std::abs(m[0][3]);
+    const fp_t yAbsSum = std::abs(m[1][0] * p.x) + std::abs(m[1][1] * p.y) + std::abs(m[1][2] * p.z) + std::abs(m[1][3]);
+    const fp_t zAbsSum = std::abs(m[2][0] * p.x) + std::abs(m[2][1] * p.y) + std::abs(m[2][2] * p.z) + std::abs(m[2][3]);
+    out_pError = pbr::Gamma(3) * Vector3_t(xAbsSum, yAbsSum, zAbsSum);
+
+    PBR_ASSERT(wp != 0)
+    if (wp == 1)
+        return Point3_t(xp, yp, zp);
+    else
+        // FINDOUT: Will be Point3_t(xp / wp, yp / wp, zp / wp); more effective ?
+        return Point3_t(xp, yp, zp) / wp;
+}
+
 
 PBR_CNSTEXPR PBR_INLINE
 Vector3_t Transform::operator()(const Vector3_arg<fp_t> v) const
@@ -283,17 +319,50 @@ Normal3_t Transform::operator()(const Normal3_arg<fp_t> n) const
                      mInv[0][2] * n.x + mInv[1][2] * n.y + mInv[2][2] * n.z);
 }
 
-// TODO: I don't understand shit about implementation of this method
-// PBR_CNSTEXPR PBR_INLINE
-// Ray Transform::operator()(const Ray_arg r) const
-// {
-//     return ;
-// }
+// NOTE: Method with error correction, but probably there is no way without it, even with fp_t=double.
+PBR_CNSTEXPR PBR_INLINE
+Ray Transform::operator()(const Ray_arg r) const
+{
+    Vector3_t oError;
+    Point3_t origin = (*this)(r.origin, oError);
+    Vector3_t direction = (*this)(r.direction);
+    // Offset origin to edge of error bounds, to prevent self-intersection
+    fp_t tMax = r.tMax;
+    fp_t lengthSquared = direction.LengthSquared();
+    // FINDOUT: Isn't this always == true ? May be after transformation somehow direction can be zero.
+    if(lengthSquared > 0) {
+        fp_t dt = Dot(Abs(direction), oError) / lengthSquared;
+        origin += direction * dt;
+        tMax -= dt; // FINDOUT: Why ? Isn't tMax almost always = Infinity ?
+    }
+    // TODO: Medium not implemented.
+    return Ray(origin, direction, tMax, r.time /*, r.medium*/);
+}
 
-// TODO: same as for Ray
+// NOTE: Same problems as with basi Ray transform.
+PBR_CNSTEXPR PBR_INLINE
+Ray Transform::operator()(const Ray_arg r, Vector3_t &out_oError, Vector3_t &out_dError) const
+{
+    Point3_t origin = (*this)(r.origin, out_oError);
+    Vector3_t direction = (*this)(r.direction, out_dError);
+    // Offset origin to edge of error bounds, to prevent self-intersection
+    fp_t tMax = r.tMax;
+    fp_t lengthSquared = direction.LengthSquared();
+    if(lengthSquared > 0) {
+        fp_t dt = Dot(Abs(direction), out_oError) / lengthSquared;
+        origin += direction * dt;
+        // tMax -= dt; // FINDOUT: Why this line is comment out in the book ?
+    }
+    // TODO: Medium not implemented.
+    return Ray(origin, direction, tMax, r.time /*, r.medium*/);
+}
+
+
+// TODO: Implementation is shit in the book
 // PBR_CNSTEXPR PBR_INLINE
 // RayDifferential Transform::operator()(const RayDifferential_arg r) const
 // {
+//     Ray tr = (*this)(r.)
 //     return ;
 // }
 
@@ -311,6 +380,14 @@ Normal3_t Transform::operator()(const Normal3_arg<fp_t> n) const
 //     ret = Union(ret, M(Point3f(b.pMax.x, b.pMax.y, b.pMax.z)));
 //     return ret;
 // }
+
+PBR_CNSTEXPR PBR_INLINE
+SurfaceInteraction Transform::operator()(const SurfaceInteraction &si) const
+{
+    const Transform &t = *this;
+
+    // TODO:
+}
 
 
 // ---------------------------------------
@@ -452,7 +529,7 @@ Transform LookAt(const Point3_arg<fp_t> pos, const Point3_arg<fp_t> look, const 
 
 #pragma endregion Transform
 
-} // namespace pbr
+PBR_NAMESPACE_END
 
 #undef PBR_CNSTEXPR
 #undef PBR_INLINE

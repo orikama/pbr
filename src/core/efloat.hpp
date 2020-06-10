@@ -8,7 +8,52 @@
 // TODO: Write tests for it.
 
 
-namespace pbr {
+PBR_NAMESPACE_BEGIN
+
+// NOTE: Currenlty not used anywhere.
+/*
+inline
+ui32 FloatToBits(f32 f)
+{
+    ui32 bits;
+    memcpy(&bits, &f, sizeof(f32));
+    return bits;
+}
+
+inline
+f32 BitsToFloat(ui32 bits)
+{
+    f32 f;
+    memcpy(&f, &bits, sizeof(ui32));
+    return f;
+}
+
+inline
+f32 NextFloatUp(f32 f)
+{
+    if(std::isinf(f) && f > 0.f) return f;
+    if(f == -0.f) f = 0.f;
+
+    ui32 bits = FloatToBits(f);
+    if(f >= 0) ++bits;
+    else --bits;
+
+    return BitsToFloat(bits);
+}
+
+inline
+f32 NextFloatDown(f32 f)
+{
+    if(std::isinf(f) && f < 0.f) return f;
+    if(f == -0.f) f = 0.f;
+
+    ui32 bits = FloatToBits(f);
+    if(f >= 0) --bits;
+    else ++bits;
+
+    return BitsToFloat(bits);
+}
+*/
 
 class EFloat
 {
@@ -44,7 +89,7 @@ public:
 
     friend EFloat Sqrt(EFloat ef);
     friend EFloat Abs(EFloat ef);
-    friend bool Quadratic(EFloat a, EFloat b, EFloat c, EFloat &x0, EFloat &x1);
+    friend bool Quadratic(EFloat a, EFloat b, EFloat c, EFloat &out_t0, EFloat &out_t1);
 
 
 private:
@@ -227,7 +272,8 @@ EFloat Abs(EFloat ef)
 }
 
 // DIFFERENCE: Discriminant was double
-bool Quadratic(EFloat a, EFloat b, EFloat c, EFloat &x0, EFloat &x1)
+// If there is solution, out_t0 will be <= out_t1
+bool Quadratic(EFloat a, EFloat b, EFloat c, EFloat &out_t0, EFloat &out_t1)
 {
     fp_t discriminant = b.value * b.value - 4.f * a.value * c.value;
     if(discriminant < 0.f)
@@ -242,13 +288,13 @@ bool Quadratic(EFloat a, EFloat b, EFloat c, EFloat &x0, EFloat &x1)
     else
         q = -.5f * (b + efD);
 
-    x0 = q / a;
-    x1 = c / q;
-    // NOTE: Why ?
-    if(x0.value > x1.value)
-        std::swap(x0, x1);
+    out_t0 = q / a;
+    out_t1 = c / q;
+
+    if(out_t0.value > out_t1.value)
+        std::swap(out_t0, out_t1);
 
     return true;
 }
 
-} // namespace pbr
+PBR_NAMESPACE_END

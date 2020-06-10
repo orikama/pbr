@@ -2,11 +2,12 @@
 
 #include "core.hpp"
 #include "geometry.hpp"
+#include "shape.h"
 
 
 // TODO: Separate implementation in .cpp file ?
 
-namespace pbr {
+PBR_NAMESPACE_BEGIN
 
 // ******************************************************************************
 // -------------------------------- INTERACTION ---------------------------------
@@ -38,7 +39,7 @@ struct Interaction
 
     Point3_t point;
     Vector3_t pError;
-    Vector3_t wo;       // outgoing direction
+    Vector3_t wo;       // negative ray direction, outgoing direction when computing lightning at point
     Normal3_t normal;   // surface normal at the point
     //MediumInterface mediumInterface;
     fp_t time;
@@ -115,20 +116,20 @@ struct MediumIntercation : public Interaction
 
 #pragma region SurfaceInteraction
 
-// TODO: Shape not implemented
 // TODO: BSDF and BSSRDF not implemented
-// NOTE: i32 faceIndex was not implemented int the book
-// NOTE: Empty constructor ?
+// TODO: Primitive not implemented
+// NOTE: i32 faceIndex was not implemented in the book
+// DIFFERENCE: No empty constructor.
 struct SurfaceInteraction : public Interaction
 {
 
-    SurfaceInteraction(const Point3_arg<fp_t> p, const Vector3_arg<fp_t> pError,
-                       const Point2_arg<fp_t> uv, const Vector3_arg<fp_t> wo,
-                       const Vector3_arg<fp_t> dpdu, const Vector3_arg<fp_t> dpdv,
-                       const Normal3_arg<fp_t> dndu, const Normal3_arg<fp_t> dndv,
-                       fp_t time
-                       //const Shape *sh,
-                       /*int faceIndex = 0*/);
+    explicit SurfaceInteraction(const Point3_arg<fp_t> point, const Vector3_arg<fp_t> pError,
+                                const Point2_arg<fp_t> uv, const Vector3_arg<fp_t> wo,
+                                const Vector3_arg<fp_t> dpdu, const Vector3_arg<fp_t> dpdv,
+                                const Normal3_arg<fp_t> dndu, const Normal3_arg<fp_t> dndv,
+                                fp_t time,
+                                const Shape *shape
+                                /*int faceIndex = 0*/);
 
     void SetShadingGeometry(const Vector3_arg<fp_t> dpdu, const Vector3_arg<fp_t> dpdv,
                             const Normal3_arg<fp_t> dndu, const Normal3_arg<fp_t> dndv,
@@ -137,12 +138,12 @@ struct SurfaceInteraction : public Interaction
     Point2_t uv;
     Vector3_t dpdu, dpdv;
     Normal3_t dndu, dndv;
-    //const Shape *shape = nullptr;
+    const Shape *shape = nullptr;
     struct {
         Normal3_t n;
         Vector3_t dpdu, dpdv;
         Normal3_t dndu, dndv;
-    } Shading;
+    } shading;
     //const Primitive *primitive = nullptr;
     //BSDF *bsdf = nullptr;
     //BSSRDF *bssrdf = nullptr;
@@ -166,10 +167,27 @@ SurfaceInteraction::SurfaceInteraction(const Point3_arg<fp_t> point, const Vecto
                                        const Point2_arg<fp_t> uv, const Vector3_arg<fp_t> wo,
                                        const Vector3_arg<fp_t> dpdu, const Vector3_arg<fp_t> dpdv,
                                        const Normal3_arg<fp_t> dndu, const Normal3_arg<fp_t> dndv,
-                                       fp_t time
-                                       //const Shape *sh,
+                                       fp_t time,
+                                       const Shape *shape
                                        /*int faceIndex = 0*/)
-                                       {}
+    : Interaction(point, Normal3_t(Normalize(Cross(dpdu, dpdv))), pError, wo, time /*,nullptr*/)
+    , uv(uv)
+    , dpdu(dpdu)
+    , dpdv(dpdv)
+    , dndu(dndu)
+    , dndv(dndv)
+    , shape(shape)
+    //, faceIndex(faceIndex)
+{
+    if (shape && (shape->reverseOrientation ^ shape->transformSwapsHandedness)) {
+        normal *= -1;
+    }
+    shading.n = normal;
+    shading.dpdu = dpdu;
+    shading.dpdv = dpdv;
+    shading.dndu = dndu;
+    shading.dndv = dndv;
+}
 
 
 // ---------------------------------------
@@ -179,4 +197,4 @@ SurfaceInteraction::SurfaceInteraction(const Point3_arg<fp_t> point, const Vecto
 
 #pragma endregion SurfaceInteraction
 
-} // namespace pbr
+PBR_NAMESPACE_END

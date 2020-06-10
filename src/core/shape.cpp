@@ -2,7 +2,7 @@
 #include "stats.h"
 
 
-namespace pbr {
+PBR_NAMESPACE_BEGIN
 
 // ---------------------------------------
 // ------------ CONSTRUCTORS -------------
@@ -29,10 +29,12 @@ Bounds3_t Shape::WorldBound() const
     return (*ObjectToWorld)(ObjectBound());
 }
 
-bool Shape::IntersectP(const Ray_arg ray, bool testAlphaTexture = true) const
+bool Shape::IsIntersecting(const Ray_arg r, bool testAlphaTexture = true) const
 {
-    return Intersect(ray, nullptr, nullptr, testAlphaTexture);
+    // DIFFERENCE: I changed Intersect(const Ray_arg, fp_t &, SurfaceInteraction &,bool) to to references instead of pointers.
+    //             So I need to rework this function. 
+    return Intersect(r, nullptr, nullptr, testAlphaTexture);
 }
 
 
-} // namespace pbr
+PBR_NAMESPACE_END

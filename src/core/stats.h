@@ -12,10 +12,10 @@
 // TODO: Why book implementation has wierd .cpp/.h separation ? Move all functions to .cpp ?
 
 
-namespace pbr {
+PBR_NAMESPACE_BEGIN
 
 // ******************************************************************************
-// ----------------------------------- STATS ------------------------------------
+// ------------------------------- STATS COUNTER --------------------------------
 // ******************************************************************************
 #if PBR_ENABLE_STATS_COUNT == 1
 
@@ -66,7 +66,7 @@ private:
     }                                                                               \
     static StatsRegisterer _PBR_STATS_REG_##variable(_PBR_STATS_FUNC_##variable);   \
 
-#else
+#else // PBR_ENABLE_PROFILING
 
 #define PBR_STATS_COUNTER_INCREMENT(variable)
 #define PBR_STATS_COUNTER(title, variable)
@@ -74,20 +74,42 @@ private:
 #endif // PBR_ENABLE_STATS_COUNT
 
 
+// ******************************************************************************
+// ---------------------------------- PROFILER ----------------------------------
+// ******************************************************************************
 #if PBR_ENABLE_PROFILING == 1
 
 // NOTE: Keep the same order as in the book.
-enum class ProfileCategory
+enum class ProfileCategory : i32
 {
-    ShapeIntersect
+    Shape_Intersect,
+    Shape_IsIntersecting
+};
+
+
+extern thread_local ui64 g_ProfilerState;
+
+inline
+ui64 ProfileCategoryToBits(ProfileCategory pc)
+{
+    return 1ull << i32(pc);
 }
 
+
+// DIFFERENCE: Copy constructor and assign operator not marked as =delete.
 class ProfilePhase
 {
 public:
     ProfilePhase(ProfileCategory pc)
     {
-        m_categoryBit = 
+        m_categoryBit = ProfileCategoryToBits(pc);
+        m_reset = (g_ProfilerState & m_categoryBit) == 0;
+        g_ProfilerState |= m_categoryBit;
+    }
+    ~ProfilePhase()
+    {
+        if (m_reset)
+            g_ProfilerState &= ~m_categoryBit;
     }
 
 private:
@@ -95,10 +117,12 @@ private:
     bool m_reset;
 };
 
-#define PBR_PROFILE_FUNCTION(category)
+#define PBR_PROFILE_FUNCTION(category) ProfilePhase _PBR_profile_phase(category);
 
-#else
+#else // PBR_ENABLE_PROFILING
+
+#define PBR_PROFILE_FUNCTION(category)
 
 #endif // PBR_ENABLE_PROFILING
 
-} // namespace pbr
+PBR_NAMESPACE_END

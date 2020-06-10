@@ -8,7 +8,7 @@
 
 // TODO: Use C++ 20 concepts
 
-namespace pbr {
+PBR_NAMESPACE_BEGIN
 
 template<typename T> inline
 T Sqrt(const T v)
@@ -37,7 +37,7 @@ T Sin(const T v)
 {
    static_assert(std::numeric_limits<T>::is_iec559);
 
-   if constexpr (std::is_same<T, float>())
+   if constexpr (std::is_same<T, f32>())
        return std::sinf(v);
    else
        return std::sin(v);
@@ -48,7 +48,7 @@ T Cos(const T v)
 {
    static_assert(std::numeric_limits<T>::is_iec559);
 
-   if constexpr (std::is_same<T, float>())
+   if constexpr (std::is_same<T, f32>())
        return std::cosf(v);
    else
        return std::cos(v);
@@ -59,13 +59,13 @@ T ACos(const T v)
 {
    static_assert(std::numeric_limits<T>::is_iec559);
 
-   if constexpr (std::is_same<T, float>())
+   if constexpr (std::is_same<T, f32>())
        return std::acosf(v);
    else
        return std::acos(v);
 }
 
-//template<typename T>
+//template<typename T> inline
 //inline T tan(const T v)
 //{
 //    static_assert(std::numeric_limits<T>::is_iec559);
@@ -75,8 +75,18 @@ T ACos(const T v)
 //    else
 //        return std::tan(v);
 //}
-//
-//
+
+template<typename T> inline
+inline T ATan2(const T y, const T x)
+{
+   static_assert(std::numeric_limits<T>::is_iec559);
+
+   if constexpr (std::is_same<T, f32>())
+       return std::atan2f(y, x);
+   else
+       return std::atan2(y, x);
+}
+
 //template<typename T>
 //inline T pow(const T value, const T power)
 //{
@@ -149,4 +159,4 @@ fp_t Gamma(i32 n)
 }
 
 
-} // namespace pbr
+PBR_NAMESPACE_END
