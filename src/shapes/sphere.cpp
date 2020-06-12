@@ -70,9 +70,12 @@ bool Sphere::Intersect(const Ray_arg r,
     }
     // Compute sphere hit(intersection) point and phi
     Point3_t pHit = ray((fp_t)tSphereHit);
+    // Refine sphere intersection point
+//#if PBR_PBR_ENABLE_EFLOAT == 1
     pHit *= m_radius / Distance(pHit, Point3_t(0)); // NOTE: This Distance call can be more effective, basically it's similiar to pHit.Length()
     // FINDOUT: I don't know what this line doing, there is not explanation in the book. Seems like it's safe guard for std::atan2()
     if (pHit.x == 0 && pHit.y == 0) pHit.x = 1e-5 * m_radius;
+//#endif
     fp_t phi = pbr::ATan2(pHit.y, pHit.x);
     if (phi < 0) phi += constants::pi_t * 2;
 
@@ -83,7 +86,7 @@ bool Sphere::Intersect(const Ray_arg r,
             return false;
         tSphereHit = t1;
         // Compute sphere hit(intersection) point and phi
-        Point3_t pHit = ray((fp_t)tSphereHit);
+        pHit = ray((fp_t)tSphereHit);
         pHit *= m_radius / Distance(pHit, Point3_t(0));
         if (pHit.x == 0 && pHit.y == 0) pHit.x = 1e-5 * m_radius;
         fp_t phi = pbr::ATan2(pHit.y, pHit.x);
@@ -130,7 +133,7 @@ bool Sphere::Intersect(const Ray_arg r,
     Vector3_t pError(Gamma(5) * pbr::Abs(pHit));
 //#endif
 
-    out_tHit = (fp_t)tSphereHit;
+    out_tHit = fp_t(tSphereHit);
     out_isect = (*ObjectToWorld)(SurfaceInteraction(pHit, pError,
                                                     Point2_t(u, v), -ray.direction,
                                                     dpdu, dpdv, dndu, dndv,

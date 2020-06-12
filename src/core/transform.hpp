@@ -249,7 +249,8 @@ Transform::Transform(const Matrix4x4_arg matrix, const Matrix4x4_arg inverse)
 
 // TODO: Why overload operator* for transform and not for Mtrix4x4
 PBR_CNSTEXPR
-Transform operator*(const Transform &t1, const Transform &t2) {
+Transform operator*(const Transform &t1, const Transform &t2)
+{
     return Transform(Mul(t1.m, t2.m),
                      Mul(t2.mInv, t1.mInv));
 }
@@ -330,7 +331,7 @@ Ray Transform::operator()(const Ray_arg r) const
     fp_t tMax = r.tMax;
     fp_t lengthSquared = direction.LengthSquared();
     // FINDOUT: Isn't this always == true ? May be after transformation somehow direction can be zero.
-    if(lengthSquared > 0) {
+    if (lengthSquared > 0) {
         fp_t dt = Dot(Abs(direction), oError) / lengthSquared;
         origin += direction * dt;
         tMax -= dt; // FINDOUT: Why ? Isn't tMax almost always = Infinity ?
@@ -339,7 +340,7 @@ Ray Transform::operator()(const Ray_arg r) const
     return Ray(origin, direction, tMax, r.time /*, r.medium*/);
 }
 
-// NOTE: Same problems as with basi Ray transform.
+// NOTE: Same problems as with basic Ray transform.
 PBR_CNSTEXPR PBR_INLINE
 Ray Transform::operator()(const Ray_arg r, Vector3_t &out_oError, Vector3_t &out_dError) const
 {
