@@ -5,11 +5,11 @@
 
 PBR_NAMESPACE_BEGIN
 
-class Cylinder : public Shape
+class Disk : public Shape
 {
 public:
-    Cylinder(const Transform *ObjectToWorld, const Transform *WorldToObject, bool reverseOrientation,
-             fp_t radius, fp_t zMin, fp_t zMax, fp_t phiMax);
+    Disk(const Transform *ObjectToWorld, const Transform *WorldToObject, bool reverseOrientation,
+         fp_t height, fp_t radius, fp_t innerRadius, fp_t phiMax);
 
 
     Bounds3_t ObjectBound() const override;
@@ -25,8 +25,9 @@ public:
 
 
 private:
+    const fp_t m_height;
     const fp_t m_radius;
-    const fp_t m_zMin, m_zMax;
+    const fp_t m_innerRadius;
     const fp_t m_phiMax;
 };
 

@@ -22,7 +22,11 @@ set(pbr_lib_CORE_SOURCES ${pbr_SRC_CORE_DIR}/core.hpp
 
 set(pbr_SRC_SHAPES_DIR "${pbr_SRC_DIR}/shapes")
 set(pbr_lib_SHAPES_SOURCES ${pbr_SRC_SHAPES_DIR}/sphere.h
-                           ${pbr_SRC_SHAPES_DIR}/sphere.cpp)
+                           ${pbr_SRC_SHAPES_DIR}/sphere.cpp
+                           ${pbr_SRC_SHAPES_DIR}/cylinder.h
+                           ${pbr_SRC_SHAPES_DIR}/cylinder.cpp
+                           ${pbr_SRC_SHAPES_DIR}/disk.h
+                           ${pbr_SRC_SHAPES_DIR}/disk.cpp)
 
 
 add_library(pbr_lib STATIC ${pbr_lib_CORE_SOURCES} ${pbr_lib_SHAPES_SOURCES})

@@ -136,7 +136,7 @@ bool Cylinder::Intersect(const Ray_arg r,
 // NOTE: testAlphaTexture is not used
 bool Cylinder::IsIntersecting(const Ray_arg r, bool /*testAlphaTexture = true*/) const
 {
-    PBR_PROFILE_FUNCTION(ProfileCategory::Shape_Intersect)
+    PBR_PROFILE_FUNCTION(ProfileCategory::Shape_IsIntersecting)
 
     // Transform ray to object space
     Vector3_t oError, dError;
