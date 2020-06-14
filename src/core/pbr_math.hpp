@@ -7,12 +7,17 @@
 #include "core.hpp"
 
 // TODO: Use C++ 20 concepts
+// NOTE: Apparently all this wrappers are useless, because c++ variants of this functions are overloaded.
+//       But may be this will be usefull with benchmarking f32 vs f64, where I can use f64 versions of this functions with fp_t=f32.
+// NOTE: Found out about std::hypot(), which can compute sqrt(x^2+y^2),sqrt(x^2+y^2+z^2) with better precision, but like 20x slower.
+//       Another interesting function is std::fma(), although smae assembly can be achieved with multiple optimization flags.
+//       https://stackoverflow.com/questions/34265982/automatically-generate-fma-instructions-in-msvc
 
 PBR_NAMESPACE_BEGIN
 
 template<typename T> inline
 T Sqrt(const T v)
-{
+{FP_con
     static_assert(std::numeric_limits<T>::is_iec559);
 
     if constexpr (std::is_same<T, f32>())
@@ -87,20 +92,9 @@ inline T ATan2(const T y, const T x)
        return std::atan2(y, x);
 }
 
-//template<typename T>
-//inline T pow(const T value, const T power)
-//{
-//    static_assert(std::numeric_limits<T>::is_iec559);
-//
-//    if constexpr (std::is_same<T, float>())
-//        return std::powf(value, power);
-//    else
-//        return std::pow(value, power);
-//}
-
 
 template<typename T> inline constexpr
-T Radians(T degrees)
+T Radians(const T degrees)
 {
    static_assert(std::numeric_limits<T>::is_iec559);
 
