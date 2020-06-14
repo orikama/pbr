@@ -64,7 +64,7 @@ bool Cylinder::Intersect(const Ray_arg r,
             return false;
     }
     // Compute cylinder hit(intersection) point and phi
-    Point3_t pHit = ray((fp_t)tCylinderHit);
+    Point3_t pHit = ray(fp_t(tCylinderHit));
 //#if PBR_PBR_ENABLE_EFLOAT == 1
     // Refine cylinder intersection point
     fp_t hitRadius = pbr::Sqrt(pHit.x * pHit.x + pHit.y + pHit.y);
@@ -77,16 +77,17 @@ bool Cylinder::Intersect(const Ray_arg r,
     // TODO: This shit is repetitive and definitely can be optimized
     // Test cylinder intersection against clipping parametrs
     if (pHit.z < m_zMin || pHit.z > m_zMax || phi > m_phiMax) {
-        if (tCylinderHit == t1 && t1.UpperBound() > ray.tMax)
+        // DIFFERENCE: Why the fuck they changed this check in all shapes after sphere in the book?
+        if (tCylinderHit == t1 || t1.UpperBound() > ray.tMax)
             return false;
         tCylinderHit = t1;
-        // Compute sphere hit(intersection) point and phi
-        pHit = ray((fp_t)tCylinderHit);
+        // Compute cylinder hit(intersection) point and phi
+        pHit = ray(fp_t(tCylinderHit));
         // Refine cylinder intersection point
         fp_t hitRadius = pbr::Sqrt(pHit.x * pHit.x + pHit.y + pHit.y);
         pHit.x *= m_radius / hitRadius;
         pHit.y *= m_radius / hitRadius;
-        fp_t phi = pbr::ATan2(pHit.y, pHit.x);
+        phi = pbr::ATan2(pHit.y, pHit.x);
         if (phi < 0) phi += constants::pi_t * 2;
         if (pHit.z < m_zMin || pHit.z > m_zMax || phi > m_phiMax)
             return false;
@@ -176,7 +177,7 @@ bool Cylinder::IsIntersecting(const Ray_arg r, bool /*testAlphaTexture = true*/)
     // TODO: This shit is repetitive and definitely can be optimized
     // Test cylinder intersection against clipping parametrs
     if (pHit.z < m_zMin || pHit.z > m_zMax || phi > m_phiMax) {
-        if (tCylinderHit == t1 && t1.UpperBound() > ray.tMax)
+        if (tCylinderHit == t1 || t1.UpperBound() > ray.tMax)
             return false;
         tCylinderHit = t1;
         // Compute sphere hit(intersection) point and phi
@@ -194,6 +195,7 @@ bool Cylinder::IsIntersecting(const Ray_arg r, bool /*testAlphaTexture = true*/)
     return true;
 }
 
+// NOTE: Doesn't count top and bottom circle area.
 fp_t Cylinder::Area() const
 {
     return m_phiMax * m_radius * (m_zMax - m_zMin);

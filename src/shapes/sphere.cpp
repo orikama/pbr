@@ -82,14 +82,14 @@ bool Sphere::Intersect(const Ray_arg r,
     // TODO: This shit is repetitive and definitely can be optimized
     // Test sphere intersection against clipping parametrs
     if (m_zMin > -m_radius && pHit.z < m_zMin || m_zMax < m_radius && pHit.z > m_zMax || phi > m_phiMax) {
-        if (tSphereHit == t1 && t1.UpperBound() > ray.tMax)
+        if (tSphereHit == t1 || t1.UpperBound() > ray.tMax)
             return false;
         tSphereHit = t1;
         // Compute sphere hit(intersection) point and phi
-        pHit = ray((fp_t)tSphereHit);
+        pHit = ray(fp_t(tSphereHit));
         pHit *= m_radius / Distance(pHit, Point3_t(0));
         if (pHit.x == 0 && pHit.y == 0) pHit.x = 1e-5 * m_radius;
-        fp_t phi = pbr::ATan2(pHit.y, pHit.x);
+        phi = pbr::ATan2(pHit.y, pHit.x);
         if (phi < 0) phi += constants::pi_t * 2;
         if (m_zMin > -m_radius && pHit.z < m_zMin || m_zMax < m_radius && pHit.z > m_zMax || phi > m_phiMax)
             return false;
@@ -181,7 +181,7 @@ bool Sphere::IsIntersecting(const Ray_arg r, bool /*testAlphaTexture = true*/) c
     // TODO: This shit is repetitive and definitely can be optimized
     // Test sphere intersection against clipping parametrs
     if (m_zMin > -m_radius && pHit.z < m_zMin || m_zMax < m_radius && pHit.z > m_zMax || phi > m_phiMax) {
-        if (tSphereHit == t1 && t1.UpperBound() > ray.tMax)
+        if (tSphereHit == t1 || t1.UpperBound() > ray.tMax)
             return false;
         tSphereHit = t1;
         // Compute sphere hit(intersection) point and phi
