@@ -17,7 +17,7 @@ PBR_NAMESPACE_BEGIN
 
 template<typename T> inline
 T Sqrt(const T v)
-{FP_con
+{
     static_assert(std::numeric_limits<T>::is_iec559);
 
     if constexpr (std::is_same<T, f32>())
@@ -82,7 +82,7 @@ T ACos(const T v)
 //}
 
 template<typename T> inline
-inline T ATan2(const T y, const T x)
+T ATan2(const T y, const T x)
 {
    static_assert(std::numeric_limits<T>::is_iec559);
 
@@ -90,15 +90,6 @@ inline T ATan2(const T y, const T x)
        return std::atan2f(y, x);
    else
        return std::atan2(y, x);
-}
-
-
-template<typename T> inline constexpr
-T Radians(const T degrees)
-{
-   static_assert(std::numeric_limits<T>::is_iec559);
-
-   return degrees * std::numbers::pi_v<T> / static_cast<T>(180);
 }
 
 
@@ -139,14 +130,21 @@ T Min3(const T x, const T y, const T z)
 
 
 // PBR book functions
-template<typename Float> constexpr inline
+template<typename T> inline constexpr
+T Radians(const T degrees)
+{
+   static_assert(std::numeric_limits<T>::is_iec559);
+   return degrees * std::numbers::pi_v<T> / static_cast<T>(180);
+}
+
+template<typename Float> inline constexpr
 Float Lerp(const Float t, const Float f1, const Float f2)
 {
     static_assert(std::numeric_limits<Float>::is_iec559);
     return f1 - t * (f2 - f1);
 }
 
-constexpr inline
+inline constexpr
 fp_t Gamma(i32 n)
 {
     return (n * constants::machineEpsilon) / ( 1 - n * constants::machineEpsilon);
