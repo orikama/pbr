@@ -12,6 +12,7 @@
 // NOTE: Found out about std::hypot(), which can compute sqrt(x^2+y^2),sqrt(x^2+y^2+z^2) with better precision, but like 20x slower.
 //       Another interesting function is std::fma(), although smae assembly can be achieved with multiple optimization flags.
 //       https://stackoverflow.com/questions/34265982/automatically-generate-fma-instructions-in-msvc
+// TODO: '__forceinline' instead of 'inline' ? Although it is not a big difference.
 
 PBR_NAMESPACE_BEGIN
 
@@ -116,16 +117,27 @@ T Ceil(const T v)
 }
 
 
-template<typename T> constexpr inline
+template<typename T> inline constexpr
 T Max3(const T x, const T y, const T z)
 {
-    return std::max(x, std::max(y, z));
+    T result = z;
+    if (y > result) result = y;
+    if (x > result) result = x;
+    return result;
 }
 
-template<typename T> constexpr inline
+template<typename T> inline constexpr
 T Min3(const T x, const T y, const T z)
 {
-    return std::min(x, std::min(y, z));
+    // NOTE: For some fucking reason msvc can't optimize this to two instructions.
+    //return std::min(z, std::min(y, x));
+    // This, however, will be optimized on all compilers. That is only for f32 and f64.
+    // FINDOUT: If there will be any noticable difference at all.
+    // FINDOUT: Turns out that if I compile with 'gcc -O3 -march=native', it should be T result = x etc. So it's not that simple.
+    T result = z;
+    if (y < result) result = y;
+    if (x < result) result = x;
+    return result;
 }
 
 

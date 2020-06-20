@@ -131,9 +131,10 @@ struct SurfaceInteraction : public Interaction
                                 const Shape *shape
                                 /*int faceIndex = 0*/);
 
-    void SetShadingGeometry(const Vector3_arg<fp_t> dpdu, const Vector3_arg<fp_t> dpdv,
-                            const Normal3_arg<fp_t> dndu, const Normal3_arg<fp_t> dndv,
-                            bool orientationIsAuthoritative);
+    //void SetShadingGeometry(const Vector3_arg<fp_t> dpdu, const Vector3_arg<fp_t> dpdv,
+    //                        const Normal3_arg<fp_t> dndu, const Normal3_arg<fp_t> dndv,
+    //                        bool orientationIsAuthoritative);
+
 
     Point2_t uv;
     Vector3_t dpdu, dpdv;
@@ -191,8 +192,16 @@ SurfaceInteraction::SurfaceInteraction(const Point3_arg<fp_t> point, const Vecto
 
 
 // ---------------------------------------
-// ---------- UTILITY FUNCTIONS ----------
+// --------------- METHODS ---------------
 // ---------------------------------------
+
+// FINDOUT: Why do the same work, that constructor already did ?
+//void SurfaceInteraction::SetShadingGeometry(const Vector3_arg<fp_t> dpdu, const Vector3_arg<fp_t> dpdv,
+//                                            const Normal3_arg<fp_t> dndu, const Normal3_arg<fp_t> dndv,
+//                                            bool orientationIsAuthoritative)
+//{
+    
+//}
 
 
 #pragma endregion SurfaceInteraction

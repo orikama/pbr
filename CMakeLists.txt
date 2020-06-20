@@ -30,7 +30,11 @@ set(pbr_lib_SHAPES_SOURCES ${pbr_SRC_SHAPES_DIR}/sphere.h
                            ${pbr_SRC_SHAPES_DIR}/cone.h
                            ${pbr_SRC_SHAPES_DIR}/cone.cpp
                            ${pbr_SRC_SHAPES_DIR}/paraboloid.h
-                           ${pbr_SRC_SHAPES_DIR}/paraboloid.cpp)
+                           ${pbr_SRC_SHAPES_DIR}/paraboloid.cpp
+                           ${pbr_SRC_SHAPES_DIR}/hyperboloid.h
+                           ${pbr_SRC_SHAPES_DIR}/hyperboloid.cpp
+                           ${pbr_SRC_SHAPES_DIR}/triangle.h
+                           ${pbr_SRC_SHAPES_DIR}/triangle.cpp)
 
 
 add_library(pbr_lib STATIC ${pbr_lib_CORE_SOURCES} ${pbr_lib_SHAPES_SOURCES})
@@ -38,7 +42,7 @@ set_target_properties(pbr_lib PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(pbr_lib INTERFACE ${pbr_SRC_CORE_DIR} ${pbr_SRC_SHAPES_DIR})
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  target_compile_options(pbr_lib PUBLIC "-std=c++20")
+    target_compile_options(pbr_lib PUBLIC "-std=c++20")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(pbr_lib PUBLIC "/std:c++latest")
 endif()

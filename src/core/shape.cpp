@@ -16,7 +16,7 @@ Shape::Shape(const Transform *ObjectToWorld, const Transform *WorldToObject,
     , reverseOrientation(reverseOrientation)
     , transformSwapsHandedness(ObjectToWorld->SwapsHandedness())
 {
-    PBR_STATS_COUNTER_INCREMENT(stats_ShapesCreated)
+    PBR_STATS_VARIABLE_INCREMENT(stats_ShapesCreated)
 }
 
 

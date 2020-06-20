@@ -91,27 +91,23 @@ Vector2<T>::Vector2(T x, T y)
 // ---- COMPOUND ARITHMETIC OPERATORS ----
 // ---------------------------------------
 
-#define COMPOUND_OPERATOR_V(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Vector2<T>& Vector2<T>::operator op(const Vector2_arg v) \
-    { \
-        PBR_ASSERT(!v.HasNaNs()) \
-        x op v.x; \
-        y op v.y; \
-        return *this; \
+#define COMPOUND_OPERATOR_V(op)                                \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE               \
+    Vector2<T>& Vector2<T>::operator op(const Vector2_arg v) { \
+        PBR_ASSERT(!v.HasNaNs())                               \
+        x op v.x; y op v.y;                                    \
+        return *this;                                          \
     }
 
 COMPOUND_OPERATOR_V(+=)
 COMPOUND_OPERATOR_V(-=)
 
 
-#define COMPOUND_OPERATOR_S(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Vector2<T>& Vector2<T>::operator op(const T scalar) \
-    { \
-        x op scalar; \
-        y op scalar; \
-        return *this; \
+#define COMPOUND_OPERATOR_S(op)                           \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE          \
+    Vector2<T>& Vector2<T>::operator op(const T scalar) { \
+        x op scalar; y op scalar;                         \
+        return *this;                                     \
     }
 
 COMPOUND_OPERATOR_S(*=)
@@ -148,21 +144,21 @@ Vector2<T> operator-(const Vector2_arg<T> v)
 // ----- BINARY ARITHMETIC OPERATORS -----
 // ---------------------------------------
 
-#define BINARY_OPERATOR_VV(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+#define BINARY_OPERATOR_VV(op)                                                 \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE                               \
     Vector2<T> operator op(const Vector2_arg<T> v1, const Vector2_arg<T> v2) { \
-        PBR_ASSERT(!v2.HasNaNs()) \
-        return Vector2<T>(v1.x op v2.x, v1.y op v2.y); \
+        PBR_ASSERT(!v2.HasNaNs())                                              \
+        return Vector2<T>(v1.x op v2.x, v1.y op v2.y);                         \
     }
 
 BINARY_OPERATOR_VV(+)
 BINARY_OPERATOR_VV(-)
 
 
-#define BINARY_OPERATOR_VS(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+#define BINARY_OPERATOR_VS(op)                                       \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE                     \
     Vector2<T> operator op(const Vector2_arg<T> v, const T scalar) { \
-        return Vector2<T>(v.x op scalar, v.y op scalar); \
+        return Vector2<T>(v.x op scalar, v.y op scalar);             \
     }
 
 BINARY_OPERATOR_VS(*)
@@ -181,10 +177,10 @@ Vector2<T> operator/(const Vector2_arg<T> v, const T scalar)
 }
 
 
-#define BINARY_OPERATOR_SV(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+#define BINARY_OPERATOR_SV(op)                                       \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE                     \
     Vector2<T> operator op(const T scalar, const Vector2_arg<T> v) { \
-        return Vector2<T>(v.x op scalar, v.y op scalar); \
+        return Vector2<T>(v.x op scalar, v.y op scalar);             \
     }
 
 BINARY_OPERATOR_SV(*)
@@ -258,6 +254,7 @@ T AbsDot(const Vector2_arg<T> v1, const Vector2_arg<T> v2)
 template<typename T> class Point3; // NOTE: Forward declaration for Vector3(Point3_arg<T> p) conversion constructor
 template<typename T> using Point3_arg = Point3<T>&;
 
+// TODO: Implement index operator[]
 template<typename T>
 struct Vector3
 {
@@ -344,28 +341,22 @@ Vector3<T>::Vector3(Point3_arg<T> p)
 // ---- COMPOUND ARITHMETIC OPERATORS ----
 // ---------------------------------------
 
-#define COMPOUND_OPERATOR_V(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Vector3<T>& Vector3<T>::operator op(const Vector3_arg v) \
-    { \
-        PBR_ASSERT(!v.HasNaNs()) \
-        x op v.x; \
-        y op v.y; \
-        z op v.z; \
-        return *this; \
+#define COMPOUND_OPERATOR_V(op)                                \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE               \
+    Vector3<T>& Vector3<T>::operator op(const Vector3_arg v) { \
+        PBR_ASSERT(!v.HasNaNs())                               \
+        x op v.x; y op v.y; z op v.z;                          \
+        return *this;                                          \
     }
 
 COMPOUND_OPERATOR_V(+=)
 COMPOUND_OPERATOR_V(-=)
 
-#define COMPOUND_OPERATOR_S(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Vector3<T>& Vector3<T>::operator op(const T scalar) \
-    { \
-        x op scalar; \
-        y op scalar; \
-        z op scalar; \
-        return *this; \
+#define COMPOUND_OPERATOR_S(op)                           \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE          \
+    Vector3<T>& Vector3<T>::operator op(const T scalar) { \
+        x op scalar; y op scalar; z op scalar;            \
+        return *this;                                     \
     }
 
 COMPOUND_OPERATOR_S(*=)
@@ -402,11 +393,11 @@ Vector3<T> operator-(const Vector3_arg<T> v)
 // ----- BINARY ARITHMETIC OPERATORS -----
 // ---------------------------------------
 
-#define BINARY_OPERATOR_VV(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+#define BINARY_OPERATOR_VV(op)                                                 \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE                               \
     Vector3<T> operator op(const Vector3_arg<T> v1, const Vector3_arg<T> v2) { \
-        PBR_ASSERT(!v2.HasNaNs()) \
-        return Vector3<T>(v1.x op v2.x, v1.y op v2.y, v1.z op v2.z); \
+        PBR_ASSERT(!v2.HasNaNs())                                              \
+        return Vector3<T>(v1.x op v2.x, v1.y op v2.y, v1.z op v2.z);           \
     }
 
 BINARY_OPERATOR_VV(+)
@@ -414,9 +405,9 @@ BINARY_OPERATOR_VV(-)
 BINARY_OPERATOR_VV(*)
 
 
-#define BINARY_OPERATOR_VS(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Vector3<T> operator op(const Vector3_arg<T> v, const T scalar) { \
+#define BINARY_OPERATOR_VS(op)                                          \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE                        \
+    Vector3<T> operator op(const Vector3_arg<T> v, const T scalar) {    \
         return Vector3<T>(v.x op scalar, v.y op scalar, v.z op scalar); \
     }
 
@@ -436,9 +427,9 @@ Vector3<T> operator/(const Vector3_arg<T> v, const T scalar)
 }
 
 
-#define BINARY_OPERATOR_SV(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Vector3<T> operator op(const T scalar, const Vector3_arg<T> v) { \
+#define BINARY_OPERATOR_SV(op)                                          \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE                        \
+    Vector3<T> operator op(const T scalar, const Vector3_arg<T> v) {    \
         return Vector3<T>(v.x op scalar, v.y op scalar, v.z op scalar); \
     }
 
@@ -537,26 +528,30 @@ Vector3<T> Max(const Vector3_arg<T> v1, const Vector3_arg<T> v2)
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 T MinComponent(const Vector3_arg<T> v)
 {
-    return pbr::min3(v.x, v.y, v.z);
+    return pbr::Min3(v.x, v.y, v.z);
 }
 
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 T MaxComponent(const Vector3_arg<T> v)
 {
-    return pbr::max3(v.x, v.y, v.z);
+    return pbr::Max3(v.x, v.y, v.z);
 }
 
-//template<typename T>
-//PBR_INLINE i32 MaxDimension(const Vector3_arg<T> v)
-//{
-//    return 
-//}
+// NOTE: This generates ugly assembly, and I don't know if there is a way to improve it. It can be done with only 2 comparison, but idk if it's better.
+// Returns index of max value in the vector, eg. Vector3(1,2,3) -> 0, Vector3(3,2,1) -> 2.
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+i32 MaxDimension(const Vector3_arg<T> v)
+{
+    if(v.x > v.y && v.x > v.z) return 0;
+    if(v.y > v.z) return 1;
+    return 2;
+}
 
-//template<typename T>
-//PBR_INLINE Vector3<T> Permute(const Vector3_arg<T> v)
-//{
-//    return 
-//}
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+Vector3<T> Permute(const Vector3_arg<T> v, i32 x, i32 y, i32 z)
+{
+   return Vector3<T>(v[x], v[y], v[z]);
+}
 
 template<typename T> PBR_INLINE
 Vector3<T> CoordinateSystem(const Vector3_arg<T> v1, Vector3<T>& v2, Vector3<T>& v3)
@@ -642,26 +637,22 @@ Point2<T>::Point2(T x, T y)
 // ---- COMPOUND ARITHMETIC OPERATORS ----
 // ---------------------------------------
 
-#define COMPOUND_OPERATOR_P(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Point2<T>& Point2<T>::operator op(const Point2_arg p) \
-    { \
-        PBR_ASSERT(!p.HasNaNs()) \
-        x op p.x; \
-        y op p.y; \
-        return *this; \
+#define COMPOUND_OPERATOR_P(op)                             \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE            \
+    Point2<T>& Point2<T>::operator op(const Point2_arg p) { \
+        PBR_ASSERT(!p.HasNaNs())                            \
+        x op p.x; y op p.y;                                 \
+        return *this;                                       \
     }
 
 COMPOUND_OPERATOR_P(+=)
 
 
-#define COMPOUND_OPERATOR_S(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Point2<T>& Point2<T>::operator op(const T scalar) \
-    { \
-        x op scalar; \
-        y op scalar; \
-        return *this; \
+#define COMPOUND_OPERATOR_S(op)                         \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE        \
+    Point2<T>& Point2<T>::operator op(const T scalar) { \
+        x op scalar; y op scalar;                       \
+        return *this;                                   \
     }
 
 COMPOUND_OPERATOR_S(*=)
@@ -698,20 +689,25 @@ Point2<T> operator-(const Point2_arg<T> p)
 // ----- BINARY ARITHMETIC OPERATORS -----
 // ---------------------------------------
 
-#define BINARY_OPERATOR_PP(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Point2<T> operator op(const Point2_arg<T> p1, const Point2_arg<T> p2) { \
-        PBR_ASSERT(!p2.HasNaNs()) \
-        return Point2<T>(p1.x op p2.x, p1.y op p2.y); \
-    }
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+Point2<T> operator+(const Point2_arg<T> p1, const Point2_arg<T> p2)
+{
+    PBR_ASSERT(!p2.HasNaNs())
+    return Point2<T>(p1.x + p2.x, p1.y + p2.y);
+}
 
-BINARY_OPERATOR_PP(+)
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+Vector2<T> operator-(const Point2_arg<T> p1, const Point2_arg<T> p2)
+{
+    PBR_ASSERT(!p2.HasNaNs())
+    return Point2<T>(p1.x - p2.x, p1.y - p2.y);
+}
 
 
-#define BINARY_OPERATOR_PS(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+#define BINARY_OPERATOR_PS(op)                                     \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE                   \
     Point2<T> operator op(const Point2_arg<T> p, const T scalar) { \
-        return Point2<T>(p.x op scalar, p.y op scalar); \
+        return Point2<T>(p.x op scalar, p.y op scalar);            \
     }
 
 BINARY_OPERATOR_PS(*)
@@ -730,10 +726,10 @@ Point2<T> operator/(const Point2_arg<T> p, const T scalar)
 }
 
 
-#define BINARY_OPERATOR_SP(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+#define BINARY_OPERATOR_SP(op)                                     \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE                   \
     Point2<T> operator op(const T scalar, const Point2_arg<T> p) { \
-        return Point2<T>(p.x op scalar, p.y op scalar); \
+        return Point2<T>(p.x op scalar, p.y op scalar);            \
     }
 
 BINARY_OPERATOR_SP(*)
@@ -742,7 +738,6 @@ BINARY_OPERATOR_SP(*)
 #undef COMPOUND_OPERATOR_P
 #undef COMPOUND_OPERATOR_S
 
-#undef BINARY_OPERATOR_PP
 #undef BINARY_OPERATOR_PS
 #undef BINARY_OPERATOR_SP
 
@@ -824,27 +819,21 @@ Point3<T>::Point3(const Vector3_arg<T> v)
 // ---- COMPOUND ARITHMETIC OPERATORS ----
 // ---------------------------------------
 
-#define COMPOUND_OPERATOR_P(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Point3<T>& Point3<T>::operator op(const Point3_arg p) \
-    { \
-        x op p.x; \
-        y op p.y; \
-        z op p.z; \
-        return *this; \
+#define COMPOUND_OPERATOR_P(op)                             \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE            \
+    Point3<T>& Point3<T>::operator op(const Point3_arg p) { \
+        x op p.x; y op p.y; z op p.z;                       \
+        return *this;                                       \
     }
 
 COMPOUND_OPERATOR_P(+=)
 
 
-#define COMPOUND_OPERATOR_S(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Point3<T>& Point3<T>::operator op(const T scalar) \
-    { \
-        x op scalar; \
-        y op scalar; \
-        z op scalar; \
-        return *this; \
+#define COMPOUND_OPERATOR_S(op)                         \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE        \
+    Point3<T>& Point3<T>::operator op(const T scalar) { \
+        x op scalar; y op scalar; z op scalar;          \
+        return *this;                                   \
     }
 
 COMPOUND_OPERATOR_S(*=)
@@ -881,25 +870,25 @@ Point3<T> operator-(const Point3_arg<T> p)
 // ----- BINARY ARITHMETIC OPERATORS -----
 // ---------------------------------------
 
-#define BINARY_OPERATOR_PP(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+#define BINARY_OPERATOR_PP(op)                                              \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE                            \
     Point3<T> operator op(const Point3_arg<T> p1, const Point3_arg<T> p2) { \
-        PBR_ASSERT(!p2.HasNaNs()) \
-        return Point3<T>(p1.x op p2.x, p1.y op p2.y, p1.z op p2.z); \
+        PBR_ASSERT(!p2.HasNaNs())                                           \
+        return Point3<T>(p1.x op p2.x, p1.y op p2.y, p1.z op p2.z);         \
     }
 
 BINARY_OPERATOR_PP(+)
 
-template<typename T> PBR_CNSTEXPR PBR_INLINE \
-Vector3<T> operator-(const Point3_arg<T> p1, const Point3_arg<T> p2) { \
-    PBR_ASSERT(!p2.HasNaNs()) \
-    return Vector3<T>(p1.x - p2.x, p1.y - p2.y, p1.z - p2.z); \
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+Vector3<T> operator-(const Point3_arg<T> p1, const Point3_arg<T> p2) {
+    PBR_ASSERT(!p2.HasNaNs())
+    return Vector3<T>(p1.x - p2.x, p1.y - p2.y, p1.z - p2.z);
 }
 
 
-#define BINARY_OPERATOR_PS(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Point3<T> operator op(const Point3_arg<T> p, const T scalar) { \
+#define BINARY_OPERATOR_PS(op)                                         \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE                       \
+    Point3<T> operator op(const Point3_arg<T> p, const T scalar) {     \
         return Point3<T>(p.x op scalar, p.y op scalar, p.z op scalar); \
     }
 
@@ -919,13 +908,25 @@ Point3<T>& operator/(const Point3_arg<T> p, const T scalar)
 }
 
 
-#define BINARY_OPERATOR_SP(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Point3<T> operator op(const T scalar, const Point3_arg<T> p) { \
+#define BINARY_OPERATOR_SP(op)                                         \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE                       \
+    Point3<T> operator op(const T scalar, const Point3_arg<T> p) {     \
+        PBR_ASSERT(!p.HasNaNs())                                       \
         return Point3<T>(p.x op scalar, p.y op scalar, p.z op scalar); \
     }
 
 BINARY_OPERATOR_SP(*)
+
+
+#define BINARY_OPERATOR_PV(op)                                             \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE                           \
+    Point3<T> operator op(const Point3_arg<T> p, const Vector3_arg<T> v) { \
+        PBR_ASSERT(!v.HasNaNs())                                           \
+        return Point3<T>(p.x op v.x, p.y op v.y, p.z op v.z);              \
+    }
+
+BINARY_OPERATOR_PV(+)
+BINARY_OPERATOR_PV(-)
 
 
 #undef COMPOUND_OPERATOR_P
@@ -935,11 +936,7 @@ BINARY_OPERATOR_SP(*)
 #undef BINARY_OPERATOR_PS
 #undef BINARY_OPERATOR_SP
 
-template<typename T> PBR_CNSTEXPR PBR_INLINE 
-Point3<T> operator+(const Point3_arg<T> p, const Vector3_arg<T> v)
-{
-    return Point3<T>(p.x + v.x, p.y + v.y, p.z + v.z);
-}
+#undef BINARY_OPERATOR_PV
 
 
 // ---------------------------------------
@@ -987,11 +984,11 @@ Point3<T> Abs(const Point3_arg<T> p)
     return Point3<T>(std::abs(p.x), std::abs(p.y), std::abs(p.z));
 }
 
-//template<typename T>
-//PBR_INLINE Vector3<T> Permute(const Point3_arg<T> v)
-//{
-//    return 
-//}
+template<typename T> PBR_CNSTEXPR PBR_INLINE
+Point3_arg<T> Permute(const Point3_arg<T> p, i32 x, i32 y, i32 z)
+{
+   return Point3_arg<T>(p[x], p[y], p[z]);
+}
 
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 T Distance(const Point3_arg<T> p1, const Point3_arg<T> p2) {
@@ -1080,29 +1077,23 @@ Normal3<T>::Normal3(const Vector3_arg<T> v)
 // ---- COMPOUND ARITHMETIC OPERATORS ----
 // ---------------------------------------
 
-#define COMPOUND_OPERATOR_N(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Normal3<T>& Normal3<T>::operator op(const Normal3_arg n) \
-    { \
-        PBR_ASSERT(!n.HasNaNs()) \
-        x op n.x; \
-        y op n.y; \
-        z op n.z; \
-        return *this; \
+#define COMPOUND_OPERATOR_N(op)                                \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE               \
+    Normal3<T>& Normal3<T>::operator op(const Normal3_arg n) { \
+        PBR_ASSERT(!n.HasNaNs())                               \
+        x op n.x; y op n.y; z op n.z;                          \
+        return *this;                                          \
     }
 
 COMPOUND_OPERATOR_N(+=)
 COMPOUND_OPERATOR_N(-=)
 
 
-#define COMPOUND_OPERATOR_S(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Normal3<T>& Normal3<T>::operator op(const T scalar) \
-    { \
-        x op scalar; \
-        y op scalar; \
-        z op scalar; \
-        return *this; \
+#define COMPOUND_OPERATOR_S(op)                           \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE          \
+    Normal3<T>& Normal3<T>::operator op(const T scalar) { \
+        x op scalar; y op scalar; z op scalar;            \
+        return *this;                                     \
     }
 
 COMPOUND_OPERATOR_S(*=)
@@ -1139,11 +1130,11 @@ Normal3<T> operator-(const Normal3_arg<T> n)
 // ----- BINARY ARITHMETIC OPERATORS -----
 // ---------------------------------------
 
-#define BINARY_OPERATOR_NN(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
+#define BINARY_OPERATOR_NN(op)                                                 \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE                               \
     Normal3<T> operator op(const Normal3_arg<T> n1, const Normal3_arg<T> n2) { \
-        PBR_ASSERT(!n2.HasNaNs()) \
-        return Normal3<T>(n1.x op n2.x, n1.y op n2.y, n1.z op n2.z); \
+        PBR_ASSERT(!n2.HasNaNs())                                              \
+        return Normal3<T>(n1.x op n2.x, n1.y op n2.y, n1.z op n2.z);           \
     }
 
 BINARY_OPERATOR_NN(+)
@@ -1151,9 +1142,9 @@ BINARY_OPERATOR_NN(-)
 BINARY_OPERATOR_NN(*)
 
 
-#define BINARY_OPERATOR_NS(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Normal3<T> operator op(const Normal3_arg<T> n, const T scalar) { \
+#define BINARY_OPERATOR_NS(op)                                          \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE                        \
+    Normal3<T> operator op(const Normal3_arg<T> n, const T scalar) {    \
         return Normal3<T>(n.x op scalar, n.y op scalar, n.z op scalar); \
     }
 
@@ -1175,9 +1166,9 @@ Vector3<T> operator/(const Normal3_arg<T> n, const T scalar)
 }
 
 
-#define BINARY_OPERATOR_SN(op) \
-    template<typename T> PBR_CNSTEXPR PBR_INLINE \
-    Normal3<T> operator op(const T scalar, const Normal3_arg<T> n) { \
+#define BINARY_OPERATOR_SN(op)                                          \
+    template<typename T> PBR_CNSTEXPR PBR_INLINE                        \
+    Normal3<T> operator op(const T scalar, const Normal3_arg<T> n) {    \
         return Normal3<T>(n.x op scalar, n.y op scalar, n.z op scalar); \
     }
 
@@ -1275,7 +1266,7 @@ Normal3<T> Max(const Normal3_arg<T> n1, const Normal3_arg<T> n2)
                       std::max(n1.z, n2.z));
 }
 
-template<typename T> PBR_INLINE
+template<typename T> PBR_CNSTEXPR PBR_INLINE
 Normal3<T> FaceForward(const Normal3_arg<T> n1, const Normal3_arg<T> n2)
 {
     return (Dot(n1,n2) < static_cast<T>(0)) ? -n1 : n1;
@@ -1493,6 +1484,7 @@ Bounds3<T>::Bounds3(const Point3_arg<T> p)
 {}
 
 // NOTE: this constructor might be inefficient, cause of somitetimes useless Min, Max
+// NOTE: May be I need a function MinMax(_1, _2) similar to std::minmax().
 template<typename T> PBR_CNSTEXPR
 Bounds3<T>::Bounds3(const Point3_arg<T> p1, const Point3_arg<T> p2)
     : pMin(Min(p1, p2))
@@ -1560,7 +1552,8 @@ Point3<T> Bounds3<T>::Lerp(const Point3_arg<T> t) const
 // TODO: in theory useless 'if' checks, but as i understand it's because of
 // Bounds3(const Point3_arg<T> p) constructor
 template<typename T> PBR_CNSTEXPR PBR_INLINE
-Vector3<T> Bounds3<T>::Offset(const Point3_arg<T> p) const {
+Vector3<T> Bounds3<T>::Offset(const Point3_arg<T> p) const
+{
     Vector3<T> o = p - pMin;
     if (pMax.x > pMin.x) o.x /= pMax.x - pMin.x;
     if (pMax.y > pMin.y) o.y /= pMax.y - pMin.y;
@@ -1570,7 +1563,8 @@ Vector3<T> Bounds3<T>::Offset(const Point3_arg<T> p) const {
 
 // TODO: probably should return pair, instead of returning through reference
 template<typename T> PBR_CNSTEXPR PBR_INLINE
-void Bounds3<T>::BoundingSphere(Point3<T> &center, fp_t &radius) const {
+void Bounds3<T>::BoundingSphere(Point3<T> &center, fp_t &radius) const
+{
     center = (pMin + pMax) / 2;
     radius = Inside(center, *this) ? Distance(center, pMax) : static_cast<fp_t>(0);
 }
@@ -1649,7 +1643,7 @@ bool Bounds3<T>::IntersectP(const Ray_arg ray, const Vector3_arg<T> invDir, cons
 
 // ---------------------------------------
 // ---------- UTILITY FUNCTIONS ----------
-// --------------------------------------
+// ---------------------------------------
 
 // NOTE: Next 3 functions assign pMin and pMax directly instead of using constructor,
 //       because it's shit, but i don't know what can i do with it. And as stated in pbrt implementation

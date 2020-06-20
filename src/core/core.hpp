@@ -1,5 +1,6 @@
 #pragma once
 
+// NOTE: May be should be called PBR_ENABLE_ERROR_CORRECTION
 #define PBR_ENABLE_EFLOAT 1
 #define PBR_EFLOAT_DEBUG 1
 
