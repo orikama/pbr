@@ -11,12 +11,12 @@
 PBR_NAMESPACE_BEGIN
 
 // NOTE: Why not all virtual methods deleted( =0 ) ?
+//       Because only Triangle implements WorldBound. Don't know about IsIntersecting() for now.
 // NOTE: Delete pointers in destructor ? (probably not, since Transform* shared across shapes)
 class Shape
 {
 public:
-    Shape(const Transform *ObjectToWorld, const Transform *WorldToObject,
-          bool reverseOrientation);
+    Shape(const Transform *ObjectToWorld, const Transform *WorldToObject, bool reverseOrientation);
     virtual ~Shape() = default;
 
 
@@ -33,7 +33,8 @@ public:
     // Surface area of a shape in object space.
     virtual fp_t Area() const = 0;
 
-// FINDOUT: Why not private ?
+
+// FINDOUT: Why not private ? I'm sure that it can be at least protected.
     const Transform *ObjectToWorld, *WorldToObject;
     const bool reverseOrientation;
     const bool transformSwapsHandedness;

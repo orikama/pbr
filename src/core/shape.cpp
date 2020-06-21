@@ -9,8 +9,7 @@ PBR_NAMESPACE_BEGIN
 // ---------------------------------------
 
 PBR_STATS_COUNTER("Scene/Shapes created", stats_ShapesCreated)
-Shape::Shape(const Transform *ObjectToWorld, const Transform *WorldToObject,
-             bool reverseOrientation)
+Shape::Shape(const Transform *ObjectToWorld, const Transform *WorldToObject, bool reverseOrientation)
     : ObjectToWorld(ObjectToWorld)
     , WorldToObject(WorldToObject)
     , reverseOrientation(reverseOrientation)

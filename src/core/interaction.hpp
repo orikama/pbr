@@ -2,7 +2,7 @@
 
 #include "core.hpp"
 #include "geometry.hpp"
-#include "shape.h"
+#include "primitive.h"
 
 
 // TODO: Separate implementation in .cpp file ?
@@ -119,6 +119,9 @@ struct MediumIntercation : public Interaction
 // TODO: BSDF and BSSRDF not implemented
 // TODO: Primitive not implemented
 // NOTE: i32 faceIndex was not implemented in the book
+// IMPROVE: This struct is huge and I think half of its stuff will be not used in some cases, may be I need to separate it.
+//       For example Shape::Intersect methods using only first half of its fields, and then they are populated manually,
+//       by functions that calling this Intersect methods.
 // DIFFERENCE: No empty constructor.
 struct SurfaceInteraction : public Interaction
 {
@@ -141,11 +144,12 @@ struct SurfaceInteraction : public Interaction
     Normal3_t dndu, dndv;
     const Shape *shape = nullptr;
     struct {
-        Normal3_t n;
+        Normal3_t normal;
         Vector3_t dpdu, dpdv;
         Normal3_t dndu, dndv;
     } shading;
-    //const Primitive *primitive = nullptr;
+
+    const Primitive *primitive = nullptr;
     //BSDF *bsdf = nullptr;
     //BSSRDF *bssrdf = nullptr;
 

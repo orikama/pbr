@@ -1298,7 +1298,7 @@ struct Ray
     Point3_t origin;
     Vector3_t direction;
     //const Medium *medium;
-    fp_t tMax; // DIFFERENCE: Marked as mutable.
+    mutable fp_t tMax; // NOTE: Is there a way to get rid of mutable ?
     fp_t time;
 };
 

@@ -39,7 +39,7 @@ std::vector<std::shared_ptr<Shape>> CreateTriangleMesh(const Transform *ObjectTo
 // ------------ CONSTRUCTORS -------------
 // ---------------------------------------
 
-PBR_STATS_MEMORY_COUNTER("Memory/Triangle meshes", stats_triangleMeshBytes)
+PBR_STATS_MEMORY_COUNTER("Memory/Triangle meshes", stats_TriangleMesh_bytes)
 PBR_STATS_RATIO("Scene/Triangles per triangle mesh", stats_nTriangles, stats_nMeshes)
 
 TriangleMesh::TriangleMesh(const Transform &ObjectToWorld,
@@ -55,28 +55,28 @@ TriangleMesh::TriangleMesh(const Transform &ObjectToWorld,
 {
     PBR_STATS_VARIABLE_INCREMENT(stats_nMeshes)
     PBR_STATS_VARIABLE_ADD(stats_nTriangles, nTriangles)
-    PBR_STATS_VARIABLE_ADD(stats_triangleMeshBytes, sizeof(*this) + vertexIndices.size() * sizeof(i32) + nVertices * sizeof(*_positions))
+    PBR_STATS_VARIABLE_ADD(stats_TriangleMesh_bytes, sizeof(*this) + vertexIndices.size() * sizeof(i32) + nVertices * sizeof(*_positions))
 
     // DIFFERENCE: Why they are using unique_ptr.reset() ?
     positions = std::make_unique<Point3_t[]>(nVertices);
     for(int i = 0; i < nVertices; ++i)
         positions[i] = ObjectToWorld(_positions[i]);
     
-    if(_uv != nullptr) {
-        PBR_STATS_VARIABLE_ADD(stats_triangleMeshBytes, nVertices * sizeof(*_uv))
+    if (_uv != nullptr) {
+        PBR_STATS_VARIABLE_ADD(stats_TriangleMesh_bytes, nVertices * sizeof(*_uv))
 
         uv = std::make_unique<Point2_t[]>(nVertices);
         std::copy(_uv, _uv + nVertices, uv.get()); // FINDOUT: Will it be as effective as memcpy() ?
     }
-    if(_normals != nullptr) {
-        PBR_STATS_VARIABLE_ADD(stats_triangleMeshBytes, nVertices * sizeof(*_normals))
+    if (_normals != nullptr) {
+        PBR_STATS_VARIABLE_ADD(stats_TriangleMesh_bytes, nVertices * sizeof(*_normals))
 
         normals = std::make_unique<Normal3_t[]>(nVertices);
         for(int i = 0; i < nVertices; ++i)
             normals[i] = ObjectToWorld(_normals[i]);
     }
-    if(_tangents != nullptr) {
-        PBR_STATS_VARIABLE_ADD(stats_triangleMeshBytes, nVertices * sizeof(*_tangents))
+    if (_tangents != nullptr) {
+        PBR_STATS_VARIABLE_ADD(stats_TriangleMesh_bytes, nVertices * sizeof(*_tangents))
 
         tangents = std::make_unique<Vector3_t[]>(nVertices);
         for(int i = 0; i < nVertices; ++i)
@@ -101,7 +101,7 @@ Triangle::Triangle(const Transform *ObjectToWorld, const Transform *WorldToObjec
     // TODO: Possible use of std::span, but will require more memory.
     , m_vIndices(&mesh->vertexIndices[3 * triangleIndex])
 {
-    PBR_STATS_VARIABLE_ADD(stats_triangleMeshBytes, sizeof(*this))
+    PBR_STATS_VARIABLE_ADD(stats_TriangleMesh_bytes, sizeof(*this))
 }
 
 

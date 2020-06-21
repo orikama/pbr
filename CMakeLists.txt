@@ -18,7 +18,9 @@ set(pbr_lib_CORE_SOURCES ${pbr_SRC_CORE_DIR}/core.hpp
                          ${pbr_SRC_CORE_DIR}/shape.h
                          ${pbr_SRC_CORE_DIR}/shape.cpp
                          ${pbr_SRC_CORE_DIR}/stats.h
-                         ${pbr_SRC_CORE_DIR}/stats.cpp)
+                         ${pbr_SRC_CORE_DIR}/stats.cpp
+                         ${pbr_SRC_CORE_DIR}/primitive.h
+                         ${pbr_SRC_CORE_DIR}/primitive.cpp)
 
 set(pbr_SRC_SHAPES_DIR "${pbr_SRC_DIR}/shapes")
 set(pbr_lib_SHAPES_SOURCES ${pbr_SRC_SHAPES_DIR}/sphere.h
