@@ -1,3 +1,5 @@
+#pragma once
+
 #include "core.hpp"
 #include <list>     // std::list
 #include <utility>  // std::pair
