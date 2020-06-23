@@ -20,7 +20,9 @@ set(pbr_lib_CORE_SOURCES ${pbr_SRC_CORE_DIR}/core.hpp
                          ${pbr_SRC_CORE_DIR}/stats.h
                          ${pbr_SRC_CORE_DIR}/stats.cpp
                          ${pbr_SRC_CORE_DIR}/primitive.h
-                         ${pbr_SRC_CORE_DIR}/primitive.cpp)
+                         ${pbr_SRC_CORE_DIR}/primitive.cpp
+                         ${pbr_SRC_CORE_DIR}/memory.h
+                         ${pbr_SRC_CORE_DIR}/memory.cpp)
 
 set(pbr_SRC_SHAPES_DIR "${pbr_SRC_DIR}/shapes")
 set(pbr_lib_SHAPES_SOURCES ${pbr_SRC_SHAPES_DIR}/sphere.h
@@ -43,17 +45,21 @@ add_library(pbr_lib STATIC ${pbr_lib_CORE_SOURCES} ${pbr_lib_SHAPES_SOURCES})
 set_target_properties(pbr_lib PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(pbr_lib INTERFACE ${pbr_SRC_CORE_DIR} ${pbr_SRC_SHAPES_DIR})
 
+#set_property(TARGET pbr_lib PROPERTY CXX_STANDARD 20)
+#set_property(TARGET pbr_lib PROPERTY CXX_STANDARD_REQUIRED ON)
+
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(pbr_lib PUBLIC "-std=c++20")
+    target_compile_definitions(pbr_lib PRIVATE PBR_COMPILER_Clang)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(pbr_lib PUBLIC "/std:c++latest")
+    target_compile_definitions(pbr_lib PRIVATE PBR_COMPILER_MSVC)
 endif()
-#add_compile_options("/std:c++latest")
 
 #target_compile_features(pbr_exe PRIVATE cxx_std_20)
 
 
-if(${CMAKE_PROJECT_NAME} STREQUAL PBR)
+if (${CMAKE_PROJECT_NAME} STREQUAL PBR)
     include(CTest)
     enable_testing()
     add_subdirectory(tests)

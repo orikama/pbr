@@ -10,6 +10,9 @@
 #define PBR_INLINE inline
 
 
+// IMPROVE: Split this file into different files? Because Ray and RayDifferential for example are not templated.
+//          And then combine them into single geometry.h ?
+
 template <typename T> inline static
 bool isNaN(const T x)
 {
@@ -1602,7 +1605,7 @@ bool Bounds3<T>::IntersectP(const Ray_arg ray, fp_t *out_hit0 /*=nullptr*/, fp_t
 }
 
 // NOTE: WTF is this style, what is this dirIsNeg
-// NOTE: Book claims 15% performance improvement with this method over it's overloaded brother.
+// NOTE: Book claims 15% performance improvement with this method over it's overloaded brother above.
 template<typename T> PBR_CNSTEXPR PBR_INLINE
 bool Bounds3<T>::IntersectP(const Ray_arg ray, const Vector3_arg<T> invDir, const i32 dirIsNeg[3]) const
 {
